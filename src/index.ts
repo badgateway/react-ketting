@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react';
 import { State, Resource } from 'ketting';
 
-type UseResourceResult<T> =
-  [true, null, null] |
-  [false, Error, null] |
-  [false, null, State<T>];
+type UseResourceResult<T> = {
+  loading: true,
+  error: null,
+  body: null,
+  state: null,
+} | {
+  loading: false,
+  error: Error,
+  body: null,
+  state: null,
+} | {
+  loading: false,
+  error: null,
+  body: T
+  state: State<T>,
+};
 
 export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
@@ -31,6 +43,11 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
   }, [resource]);
 
-  return [loading, error, state] as UseResourceResult<T>;
+  return {
+    loading,
+    error,
+    body: state ? state.body : null,
+    state,
+  } as UseResourceResult<T>;
 
 }
