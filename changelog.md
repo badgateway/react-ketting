@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.2.2 (2020-05-04)
+------------------
+
+* Remove webpack. Lets assume for now people have their own build pipeline.
+
+
 0.2.1 (2020-05-04)
 ------------------
 
