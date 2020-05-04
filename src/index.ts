@@ -10,22 +10,34 @@ type UseResourceResult<T> = {
 
 export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
-  const [state, updateState] = useState<State<T>|null>(null);
-  const [loading, updateLoading] = useState<boolean>(false);
-  const [error, updateError] = useState<Error|null>(null);
+  const [result, updateResult] = useState<UseResourceResult<T>>({
+    loading: true,
+    error: null,
+    // These are lies to make the API nicer to use.
+    body: null as any,
+    state: null as any,
+  });
 
   useEffect(() => {
-    
+
     (async() => {
 
       try {
         const resState = await resource.get();
-        updateLoading(false);
-        updateState(resState);
+        updateResult({
+          loading: false,
+          error: null,
+          state: resState,
+          body: resState.body
+        });
       } catch (err) {
-
-        updateLoading(false);
-        updateError(err);
+        updateResult({
+          loading: false,
+          error: err,
+          // More lies
+          state: null as any,
+          body: null as any,
+        });
 
       }
 
@@ -33,11 +45,6 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
   }, [resource]);
 
-  return {
-    loading,
-    error,
-    body: state ? state.body : null,
-    state,
-  } as UseResourceResult<T>;
+  return result;
 
 }
