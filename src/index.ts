@@ -2,19 +2,9 @@ import { useState, useEffect } from 'react';
 import { State, Resource } from 'ketting';
 
 type UseResourceResult<T> = {
-  loading: true,
-  error: null,
-  body: null,
-  state: null,
-} | {
-  loading: false,
-  error: Error,
-  body: null,
-  state: null,
-} | {
-  loading: false,
-  error: null,
-  body: T
+  loading: boolean
+  error: null | Error,
+  body: T,
   state: State<T>,
 };
 
