@@ -32,6 +32,7 @@ module.exports = [
     }
 
   },
+  /*
   {
     entry: [
       './test/test-entrypoint',
@@ -62,5 +63,5 @@ module.exports = [
       Buffer: false
     }
 
-  },
+  },*/
 ];
