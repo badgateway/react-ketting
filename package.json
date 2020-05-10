@@ -61,8 +61,7 @@
   },
   "mocha": {
     "require": [
-      "ts-node/register",
-      "test/testserver.ts"
+      "ts-node/register"
     ],
     "ignore": "test/test-entrypoint.ts",
     "recursive": true,
