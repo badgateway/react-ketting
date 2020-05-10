@@ -25,7 +25,8 @@
           "ES2017",
           "ESNext.bigint"
         ],
-        "declaration": true
+        "declaration": true,
+        "jsx": "react"
     },
     "include": [
         "src/**/*"

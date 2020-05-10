@@ -41,7 +41,14 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
       }
 
-    })();
+    })().catch( err => {
+      updateResult({
+        loading: false,
+        error: err,
+        state: null as any,
+        body: null as any,
+      })
+    });
 
   }, [resource]);
 
