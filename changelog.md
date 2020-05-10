@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.0 (2020-05-09)
+------------------
+
+* Added a `withResource` HoC for class-based React Components.
+
+
 0.2.3 (2020-05-04)
 ------------------
 
