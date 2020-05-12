@@ -4,8 +4,8 @@ import { State, Resource } from 'ketting';
 type UseResourceResult<T> = {
   loading: boolean
   error: null | Error,
-  body: T,
-  state: State<T>,
+  data: T,
+  resourceState: State<T>,
 };
 
 export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
@@ -14,11 +14,22 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
     loading: true,
     error: null,
     // These are lies to make the API nicer to use.
-    body: null as any,
-    state: null as any,
+    data: null as any,
+    resourceState: null as any,
   });
 
   useEffect(() => {
+
+    const stateListener = (newState: State) => {
+
+      updateResult({
+        loading: false,
+        error: null,
+        resourceState: newState,
+        data: newState.data
+      });
+
+    }
 
     (async() => {
 
@@ -27,28 +38,34 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
         updateResult({
           loading: false,
           error: null,
-          state: resState,
-          body: resState.body
+          resourceState: resState,
+          data: resState.data
         });
+
+        resource.on('update', stateListener);
+
       } catch (err) {
         updateResult({
           loading: false,
           error: err,
           // More lies
-          state: null as any,
-          body: null as any,
+          resourceState: null as any,
+          data: null as any,
         });
-
       }
 
     })().catch( err => {
       updateResult({
         loading: false,
         error: err,
-        state: null as any,
-        body: null as any,
+        resourceState: null as any,
+        data: null as any,
       })
     });
+
+    return () => {
+      resource.off('update', stateListener);
+    };
 
   }, [resource]);
 
