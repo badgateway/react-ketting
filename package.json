@@ -36,8 +36,8 @@
   ],
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@types/react": "^16.9.34",
-    "ketting": "^6.0.0-alpha.2"
+    "@types/react": "^16.9.35",
+    "ketting": "^6.0.0-alpha.4"
   },
   "peerDependencies": {
     "react": "^16.13.1"
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.10",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^12.12.37",
+    "@types/node": "^12.12.38",
     "chai": "^4.2.0",
     "mocha": "^7.1.0",
     "nyc": "^15.0.0",

@@ -41,18 +41,31 @@ export function withResource<TProps extends { resource: Resource<TResourceBody> 
         resourceState: null,
         data: null,
       };
+      this.onStateUpdateEvent = this.onStateUpdateEvent.bind(this);
     }
 
     async componentDidMount() {
       const resourceState = await this.props.resource.get();
       this.setState({
         resourceState,
-        data: resourceState.body
+        data: resourceState.data
       });
+      this.props.resource.on('update', this.onStateUpdateEvent); 
     }
 
     componentWillUnmount() {
-      // unsub
+
+      this.props.resource.off('update', this.onStateUpdateEvent);
+
+    }
+
+    async onStateUpdateEvent(state: State) {
+
+      this.setState({
+        resourceState: state,
+        data: state.data
+      });
+
     }
 
     render() {
