@@ -8,7 +8,7 @@ Changelog
 * Both the hook and HoC listen for the `update` event and automatically
   re-render when they are triggered.
 * The `state` property in the useResource hook is renamed to `resourceState`
-  for consitancy with the HoC.
+  for consistency with the HoC.
 * All `body` properties are renamed to `data`.
 
 

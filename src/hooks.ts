@@ -8,7 +8,7 @@ type UseResourceResult<T> = {
   resourceState: State<T>,
 };
 
-export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
+export function useResource<T>(resource: Resource<T>|null): UseResourceResult<T> {
 
   const [result, updateResult] = useState<UseResourceResult<T>>({
     loading: true,
@@ -17,6 +17,10 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
     data: null as any,
     resourceState: null as any,
   });
+
+  if (!resource) {
+    return result;
+  }
 
   useEffect(() => {
 
