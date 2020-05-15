@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.4.0 (2020-05-12)
+0.4.0 (2020-05-14)
 ------------------
 
 * Updated to latest Ketting 6 alpha.
