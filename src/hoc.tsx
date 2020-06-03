@@ -69,7 +69,7 @@ export function withResource<TProps extends { resource: Resource<TResourceBody> 
     }
 
     render() {
-      return <WrappedComponent resource={this.props.resource} resourceState={this.state.resourceState} data={this.state.data} {...this.props} />;
+      return <WrappedComponent resourceState={this.state.resourceState} data={this.state.data} {...this.props} />;
     }
 
   }

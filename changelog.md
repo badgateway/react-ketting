@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.4.1 (2020-06-03)
+------------------
+
+* `ketting` is now a peerDepedency.
+* Updated dependencies.
+
+
 0.4.0 (2020-05-14)
 ------------------
 
