@@ -18,6 +18,8 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
     resourceState: null as any,
   });
 
+  let mounted = true;
+
   useEffect(() => {
 
     const stateListener = (newState: State) => {
@@ -35,35 +37,43 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
       try {
         const resState = await resource.get();
-        updateResult({
-          loading: false,
-          error: null,
-          resourceState: resState,
-          data: resState.data
-        });
 
-        resource.on('update', stateListener);
+        if (mounted) {
+          updateResult({
+            loading: false,
+            error: null,
+            resourceState: resState,
+            data: resState.data
+          });
+
+          resource.on('update', stateListener);
+        }
 
       } catch (err) {
-        updateResult({
-          loading: false,
-          error: err,
-          // More lies
-          resourceState: null as any,
-          data: null as any,
-        });
+        if (mounted) {
+          updateResult({
+            loading: false,
+            error: err,
+            // More lies
+            resourceState: null as any,
+            data: null as any,
+          });
+        }
       }
 
     })().catch( err => {
-      updateResult({
-        loading: false,
-        error: err,
-        resourceState: null as any,
-        data: null as any,
-      })
+      if (mounted) {
+        updateResult({
+          loading: false,
+          error: err,
+          resourceState: null as any,
+          data: null as any,
+        })
+      }
     });
 
-    return () => {
+    return function cleanup() {
+      mounted = false;
       resource.off('update', stateListener);
     };
 
