@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.5.0 (2020-06-08)
+------------------
+
+* `useResource` now also returns `updateResourceState` and `updateData`
+  functions, to easily store state changes in a local cache.
+* `useResource` hook will avoid emitting state changes after a component
+  is cleaned up.
+
+
 0.4.1 (2020-06-03)
 ------------------
 
