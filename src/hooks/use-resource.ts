@@ -17,12 +17,12 @@ type UseResourceResponse<T> = {
 }
 
 export function useResource<T>(resource: Resource<T>, mode?: 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(parentResource: Resource<T>, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(resource: Resource<T>, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
+export function useResource<T>(parentResource: Resource<any>, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
+export function useResource<T>(resource: Resource<any>, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
 
   const isMounted = useRef(true);
 
-  const [resourceState, setResourceState] = useState<ResourceState<T>|undefined>(initialData);
+  const [resourceState, setResourceState] = useState<ResourceState<T>>();
   const [loading, setLoading] = useState(resourceState !== undefined);
   const [error, setError] = useState<null|Error>(null);
 
