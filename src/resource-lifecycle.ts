@@ -66,7 +66,7 @@ export default class ResourceLifecycle<T> {
       this.currentState = await newResource.get();
       this.setupEvents();
     } else {
-      this.currentResource.put(this.currentState!);
+      await this.currentResource.put(this.currentState!);
     }
 
   }

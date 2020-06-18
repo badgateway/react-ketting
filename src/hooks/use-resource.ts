@@ -25,7 +25,7 @@ export function useResource<T>(resource: Resource, mode: 'POST' | 'PUT' = 'PUT',
   const [resourceState, setResourceState] = useState<ResourceState<T>|undefined>(initialData);
   const [loading, setLoading] = useState(resourceState !== undefined);
   const [error, setError] = useState<null|Error>(null);
-  
+
   const lifecycle = useRef<ResourceLifecycle<T>>();
 
   useEffect( () => {
@@ -35,7 +35,7 @@ export function useResource<T>(resource: Resource, mode: 'POST' | 'PUT' = 'PUT',
       }
     }
     lifecycle.current = new ResourceLifecycle(resource, mode, initialData, onUpdate);
-  
+
     (async() => {
       setResourceState(await lifecycle.current!.getState());
       setLoading(false);
