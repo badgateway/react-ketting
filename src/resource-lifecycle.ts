@@ -40,6 +40,11 @@ export default class ResourceLifecycle<T> {
     if (this.mode === 'PUT') {
       // Update the Ketting cache too.
       this.currentResource.updateCache(state);
+    } else {
+      // We only need to call onUpdate for the 'POST' case
+      // because the regular 'update' event will handle the event for
+      // existing resources.
+      this.onUpdate(state);
     }
 
   }
