@@ -58,7 +58,7 @@ export function useReadResource<T>(resource: Resource<T>): UseReadResourceResult
 
   useEffect(() => {
 
-    const onUpdate = useRef((state: State<T>) {
+    const onUpdate = useRef((state: ResourceState<T>) => {
       if (isMounted.current) {
         setResourceState(state);
       }
@@ -72,17 +72,19 @@ export function useReadResource<T>(resource: Resource<T>): UseReadResourceResult
 
       resource.on('update', onUpdate.current);
 
-    }).catch(err => {
+    })().catch(err => {
 
       setLoading(false);
       setError(err);
 
-    }, () => {
+    })
+
+    return function cleanup() {
 
       isMounted.current = false;
-      resource.off(onUpdate.current);
+      resource.off('update', onUpdate.current);
 
-    });
+    };
 
   }, [resource]);
 

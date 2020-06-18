@@ -1,152 +1,94 @@
-import { useState, useEffect } from 'react';
-import { State, Resource } from 'ketting';
+import { Resource, State as ResourceState } from 'ketting';
+import { useRef, useState, useEffect } from 'react';
+import ResourceLifecycle from '../resource-lifecycle';
 
-type UseResourceResult<T> = {
-  /**
-   * 'true' if resource has not yet been fetched from the server.
-   */
-  loading: boolean
+type UseResourceResponse<T> = {
 
-  /**
-   * Contains an Error object when an operation has failed.
-   */
-  error: null | Error,
+  loading: boolean;
+  error: Error | null;
 
-  /**
-   * Data from the resource
-   */
-  data: T,
+  resourceState: ResourceState<T>;
+  setResourceState: (newState: ResourceState<T>) => void;
+  submit: (state?: ResourceState<T>) => void;
 
-  /**
-   * Updates the local data cache and dispatch change events.
-   */
-  updateData: (data: T) => void,
-
-  /**
-   * Full Ketting 'State' object.
-   */
-  resourceState: State<T>,
-
-  /**
-   * Updates the full resource state object in local cache, and dispatch
-   * change events.
-   */
-  updateResourceState: (state: State<T>) => void,
-
-};
-
-/**
- * A helper function that returns the default result for a 'loading' state.
- */
-function loadingState<T>(resource: Resource<T>): UseResourceResult<T> {
-
-  return {
-    loading: true,
-    error: null,
-
-    data: null as any,
-    updateData: (data: T) => { throw Error('Too early to update data. Initial state must be fetched from server first'); },
-
-    resourceState: null as any,
-    updateResourceState: (state: State<T>) => resource.updateCache(state),
-  };
+  data: T;
+  setData: (newData: T) => void;
 
 }
 
-/**
- * A helper function to generate a default 'error' state
- */
-function errorState(err: Error): UseResourceResult<any> {
+export function useResource<T>(resource: Resource, mode?: 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T>;
+export function useResource<T>(parentResource: Resource, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
+export function useResource<T>(resource: Resource, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
 
-  return {
-    loading: false,
-    error: err,
+  const isMounted = useRef(true);
 
-    data: null,
-    updateData: (data: any) => { throw Error('Cannot update the resource state after an error.'); },
-    resourceState: null as any,
-    updateResourceState: (data: any) => { throw Error('Cannot update the resource state after an error.'); },
-  };
+  const [resourceState, setResourceState] = useState<ResourceState<T>|undefined>(initialData);
+  const [loading, setLoading] = useState(resourceState !== undefined);
+  const [error, setError] = useState<null|Error>(null);
+  
+  const lifecycle = useRef<ResourceLifecycle<T>>();
 
-}
-
-/**
- * A helper function to generate the 'success state'
- */
-function successState<T>(resource: Resource<T>, state: State<T>): UseResourceResult<T> {
-
-  return {
-    loading: false,
-    error: null,
-
-    data: state.data,
-    updateData: (data: T) => {
-      state.data = data;
-      resource.updateCache(state);
-    },
-
-    resourceState: state,
-    updateResourceState: (newState: State<T>) => {
-      resource.updateCache(newState);
+  useEffect( () => {
+    const onUpdate = (state: ResourceState<T>) => {
+      if (isMounted.current) {
+        setResourceState(state);
+      }
     }
-  }
-
-}
-
-export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
-
-  const [result, updateResult] = useState(loadingState(resource));
-
-  let mounted = true;
-
-  useEffect(() => {
-
-    const onUpdateListener = (newState: State) => {
-
-      updateResult(
-        successState(resource, newState)
-      );
-
-    }
-
+    lifecycle.current = new ResourceLifecycle(resource, mode, initialData, onUpdate);
+  
     (async() => {
-
-      try {
-        const resState = await resource.get();
-
-        if (mounted) {
-          updateResult(
-            successState(
-              resource,
-              resState
-            )
-          );
-          resource.on('update', onUpdateListener);
-        }
-
-      } catch (err) {
-        if (mounted) {
-          updateResult(
-            errorState(err)
-          );
-        }
-      }
-
-    })().catch( err => {
-      if (mounted) {
-        updateResult(
-          errorState(err)
-        );
-      }
+      setResourceState(await lifecycle.current!.getState());
+      setLoading(false);
+    })().catch(err => {
+      setLoading(false);
+      setError(err);
     });
 
     return function cleanup() {
-      mounted = false;
-      resource.off('update', onUpdateListener);
-    };
-
+      lifecycle.current!.cleanup();
+    }
   }, [resource]);
 
-  return result;
+  const activeResource = useRef(resource);
+
+  if (loading) {
+    return {
+      loading,
+      error,
+      resourceState: resourceState as ResourceState<T>,
+      data: (resourceState ? resourceState.data : undefined) as T,
+      setResourceState: (state: ResourceState<T>) => {
+        throw new Error('Loading must complete before calling setResourceState');
+      },
+      setData: (newData: T) => {
+        throw new Error('Loading must complete before calling setData');
+      },
+      submit: () => {
+        throw new Error('Loading must complete before calling submit');
+      }
+    }
+
+  } else {
+
+    if (lifecycle.current===undefined) {
+      throw new Error('State error: lifecycle is not available after loading is complete. This is a bug');
+    }
+
+    return {
+      loading,
+      error,
+      resourceState: resourceState as ResourceState<T>,
+      data: (resourceState ? resourceState.data : undefined) as T,
+      setResourceState: (state: ResourceState<T>) => {
+        return lifecycle.current!.setState(state);
+      },
+      setData: (newData: T) => {
+        lifecycle.current!.setData(newData);
+      },
+      submit: () => {
+        return lifecycle.current!.submit();
+      }
+    };
+  }
 
 }
