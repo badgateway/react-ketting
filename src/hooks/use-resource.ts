@@ -16,9 +16,9 @@ type UseResourceResponse<T> = {
 
 }
 
-export function useResource<T>(resource: Resource, mode?: 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(parentResource: Resource, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(resource: Resource, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
+export function useResource<T>(resource: Resource<T>, mode?: 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T>;
+export function useResource<T>(parentResource: Resource<T>, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
+export function useResource<T>(resource: Resource<T>, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
 
   const isMounted = useRef(true);
 
