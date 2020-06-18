@@ -101,7 +101,6 @@ export function useResource<T>(resource: Resource<T>): UseResourceResult<T> {
 
   useEffect(() => {
 
-
     const onUpdateListener = (newState: State) => {
 
       updateResult(
