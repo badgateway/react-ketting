@@ -2,8 +2,20 @@ import { useState, useEffect, useRef } from 'react';
 import { Resource, State as ResourceState } from 'ketting';
 
 type UseReadResourceResult<T> = {
+
+  /**
+   * 'true' if resource has not yet been fetched from the server.
+   */
   loading: boolean,
+
+  /**
+   * Contains an Error object when an operation has failed.
+   */
   error: Error|null,
+
+  /**
+   * Full Ketting 'State' object.
+   */
   resourceState: ResourceState<T>
 }
 
