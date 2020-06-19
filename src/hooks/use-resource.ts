@@ -16,9 +16,32 @@ type UseResourceResponse<T> = {
 
 }
 
-export function useResource<T>(resource: Resource<T>, mode?: 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(parentResource: Resource<any>, mode: 'POST', initialData: ResourceState<T>): UseResourceResponse<T>;
-export function useResource<T>(resource: Resource<any>, mode: 'POST' | 'PUT' = 'PUT', initialData?: ResourceState<T>): UseResourceResponse<T> {
+type UseResourceOptions<T> = {
+  mode: 'PUT',
+  resource: Resource<T>,
+  initialState?: T | ResourceState<T>,
+} | {
+  mode: 'POST',
+  resource: Resource<any>,
+  initialState: T | ResourceState<T>,
+}
+
+export function useResource<T>(resource: Resource<T>): UseResourceResponse<T>;
+export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
+export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>): UseResourceResponse<T> {
+
+  let resource: Resource<T>;
+  let mode : 'PUT' | 'POST';
+  let initialState: ResourceState<T> | T | undefined;
+  if (arg1 instanceof Resource) {
+    resource = arg1;
+    mode = 'PUT';
+    initialState = undefined;
+  } else {
+    resource = arg1.resource;
+    mode = arg1.mode;
+    initialState = arg1.initialState;
+  }
 
   const isMounted = useRef(true);
 
@@ -34,7 +57,7 @@ export function useResource<T>(resource: Resource<any>, mode: 'POST' | 'PUT' = '
         setResourceState(state);
       }
     }
-    lifecycle.current = new ResourceLifecycle(resource, mode, initialData, onUpdate);
+    lifecycle.current = new ResourceLifecycle(resource, mode, initialState, onUpdate);
 
     (async() => {
       setResourceState(await lifecycle.current!.getState());

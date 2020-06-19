@@ -1,4 +1,4 @@
-import { Resource, State, HalState, Links } from 'ketting';
+import { Resource, State, HalState, Links, isState } from 'ketting';
 
 /**
  * A utility class for managing state changes to resources.
@@ -7,20 +7,26 @@ import { Resource, State, HalState, Links } from 'ketting';
  * resource, following a Location header and subsequent PUT
  * requests.
  */
-export default class ResourceLifecycle<T> {
+export default class ResourceLifecycle<T extends any> {
 
   currentState: State<T> | null;
   mode: 'PUT' | 'POST';
   currentResource: Resource<T>;
 
-  constructor(resource: Resource<T>, mode: 'PUT' | 'POST', initialState: State<T> | undefined, onUpdate: (state: State<T>) => void) {
+  constructor(resource: Resource<T>, mode: 'PUT' | 'POST', initialState: State<T> | T | undefined, onUpdate: (state: State<T>) => void) {
 
     if (mode==='POST' && !initialState) {
       throw new Error('In POST mode you must specifiy the "initialState" parameter');
     }
     this.currentResource = resource;
     this.mode = mode;
-    this.currentState = initialState || null;
+    if (!initialState) {
+      this.currentState = null;
+    } else if (isState(initialState as any)) {
+      this.currentState = initialState as State<T>;
+    } else {
+      this.currentState = dataToState(initialState) as State<T>;
+    }
 
   }
 
@@ -51,13 +57,11 @@ export default class ResourceLifecycle<T> {
 
   setData(data: T): void {
 
-    this.currentState = new HalState(
-      'about:blank',
-      data,
-      new Headers(),
-      new Links(),
-      [],
-    );
+    if (this.currentState) {
+      this.currentState.data = data;
+    } else {
+      this.currentState = dataToState(data);
+    }
 
   }
 
@@ -96,5 +100,24 @@ export default class ResourceLifecycle<T> {
     this.currentState = state;
 
   }
+
+}
+
+
+/**
+ * Take data and wraps it in a State object.
+ *
+ * For now this will always return a HalState object, because it's a
+ * reasonable default, but this may change in the future.
+ */
+function dataToState<T>(data: T): State<T> {
+
+  return new HalState(
+    'about:blank',
+    data,
+    new Headers(),
+    new Links('about:blank'),
+    [],
+  );
 
 }
