@@ -46,7 +46,7 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>): UseReso
   const isMounted = useRef(true);
 
   const [resourceState, setResourceState] = useState<ResourceState<T>>();
-  const [loading, setLoading] = useState(resourceState !== undefined);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null|Error>(null);
 
   const lifecycle = useRef<ResourceLifecycle<T>>();
