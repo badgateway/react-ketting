@@ -1,6 +1,6 @@
 {
   "name": "react-ketting",
-  "version": "0.5.0",
+  "version": "0.6.9",
   "description": "Ketting bindings for React",
   "main": "dist/index.js",
   "browser": "browser/react-ketting.min.js",
@@ -37,7 +37,7 @@
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "react": "^16.13.1",
-    "ketting": "^6.0.0-alpha.5"
+    "ketting": "^6.0.0-alpha.7"
   },
   "devDependencies": {
     "@types/chai": "^4.2.10",
@@ -45,7 +45,7 @@
     "@types/node": "^12.12.45",
     "@types/react": "^16.9.35",
     "chai": "^4.2.0",
-    "ketting": "^6.0.0-alpha.5",
+    "ketting": "^6.0.0-alpha.7",
     "mocha": "^7.2.0",
     "nyc": "^15.1.0",
     "react": "^16.13.1",
