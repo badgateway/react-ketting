@@ -12,7 +12,7 @@ export default class ResourceLifecycle<T extends any> {
   currentState: State<T> | null;
   mode: 'PUT' | 'POST';
   currentResource: Resource<T>;
-  onUpdate: (newState: State<T>)=>void;
+  onUpdate: (newState: State<T>) => void;
 
   constructor(resource: Resource<T>, mode: 'PUT' | 'POST', initialState: State<T> | T | undefined, onUpdate: (state: State<T>) => void) {
 
@@ -29,9 +29,11 @@ export default class ResourceLifecycle<T extends any> {
     } else {
       this.currentState = dataToState(initialState) as State<T>;
     }
+    if (mode === 'PUT') {
+      this.setupEvents();
+    }
 
   }
-
 
   async getState(): Promise<State<T>> {
 
