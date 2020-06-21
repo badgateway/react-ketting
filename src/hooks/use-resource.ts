@@ -4,14 +4,23 @@ import ResourceLifecycle from '../resource-lifecycle';
 
 type UseResourceResponse<T> = {
 
+  // True if there is no data yet
   loading: boolean;
   error: Error | null;
 
+  // A full Ketting State object
   resourceState: ResourceState<T>;
+
+  // Update the state
   setResourceState: (newState: ResourceState<T>) => void;
+
+  // Send the state to the server via a PUT or POST request.
   submit: (state?: ResourceState<T>) => void;
 
+  // The 'data' part of the state.
   data: T;
+
+  // Update the data from the state.
   setData: (newData: T) => void;
 
 }
@@ -41,7 +50,7 @@ type UseResourceOptions<T> = {
  *     submit
  *  } = useResource(resource);
  * </pre>
- * 
+ *
  * Returned properties:
  *
  * * loading - will be true as long as the result is still being fetched from
