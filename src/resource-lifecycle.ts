@@ -12,6 +12,7 @@ export default class ResourceLifecycle<T extends any> {
   currentState: State<T> | null;
   mode: 'PUT' | 'POST';
   currentResource: Resource<T>;
+  onUpdate: (newState: State<T>)=>void;
 
   constructor(resource: Resource<T>, mode: 'PUT' | 'POST', initialState: State<T> | T | undefined, onUpdate: (state: State<T>) => void) {
 
@@ -20,6 +21,7 @@ export default class ResourceLifecycle<T extends any> {
     }
     this.currentResource = resource;
     this.mode = mode;
+    this.onUpdate = onUpdate;
     if (!initialState) {
       this.currentState = null;
     } else if (isState(initialState as any)) {
@@ -50,7 +52,7 @@ export default class ResourceLifecycle<T extends any> {
       // We only need to call onUpdate for the 'POST' case
       // because the regular 'update' event will handle the event for
       // existing resources.
-      this.onUpdate(state);
+      this.update(state);
     }
 
   }
@@ -82,7 +84,7 @@ export default class ResourceLifecycle<T extends any> {
 
   public cleanup() {
 
-    this.currentResource.off('update', this.onUpdate);
+    this.currentResource.off('update', this.update);
 
   }
 
@@ -91,13 +93,14 @@ export default class ResourceLifecycle<T extends any> {
     if (this.mode === 'POST') {
       throw new Error('Update events cannot be subscribed to before the resource exists');
     }
-    this.currentResource.on('update', this.onUpdate);
+    this.currentResource.on('update', this.update);
 
   }
 
-  private onUpdate(state: State<T>) {
+  private update(state: State<T>) {
 
     this.currentState = state;
+    this.onUpdate(state);
 
   }
 
