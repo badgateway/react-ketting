@@ -33,6 +33,8 @@ export default class ResourceLifecycle<T extends any> {
       this.setupEvents();
     }
 
+    this.update = this.update.bind(this);
+
   }
 
   async getState(): Promise<State<T>> {
