@@ -54,7 +54,7 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>): UseReso
   useEffect( () => {
     const onUpdate = (state: ResourceState<T>) => {
       if (isMounted.current) {
-        setResourceState(state);
+        setResourceState(state.clone());
       }
     }
     lifecycle.current = new ResourceLifecycle(resource, mode, initialState, onUpdate);
