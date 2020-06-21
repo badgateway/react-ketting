@@ -63,8 +63,8 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>): UseReso
       setResourceState(await lifecycle.current!.getState());
       setLoading(false);
     })().catch(err => {
-      setLoading(false);
       setError(err);
+      setLoading(false);
     });
 
     return function cleanup() {
