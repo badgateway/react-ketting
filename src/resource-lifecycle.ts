@@ -29,11 +29,14 @@ export default class ResourceLifecycle<T extends any> {
     } else {
       this.currentState = dataToState(initialState) as State<T>;
     }
+
+    // Rebind to 'this' so that 'this' will refer to the correct thing
+    // in the update function.
+    this.update = this.update.bind(this);
     if (mode === 'PUT') {
       this.setupEvents();
     }
 
-    this.update = this.update.bind(this);
 
   }
 
