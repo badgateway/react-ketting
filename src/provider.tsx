@@ -6,7 +6,7 @@ type Props = {
   children: React.ReactNode | React.ReactNode[] | null;
 };
 
-type KettingContext = {
+export type KettingContext = {
   client?: Client,
 };
 
