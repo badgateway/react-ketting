@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.6.9 (2020-06-22)
+------------------
+
+* Rewrite of `useResource`. It can now fully manage updating state, submitting
+  to the server.
+* 'New resource' flow in useResource, allowing it be be used to create a new
+  resource via `POST` request, and subsequent `PUT` requests.
+* A simpler `useReadResource` hook. Providing read-only access to resources,
+  and change subscriptions.
+
+
 0.5.0 (2020-06-08)
 ------------------
 
