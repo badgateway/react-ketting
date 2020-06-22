@@ -1,5 +1,6 @@
 import { Resource, State as ResourceState } from 'ketting';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useContext } from 'react';
+import { getKettingContext } from '../provider';
 import ResourceLifecycle from '../resource-lifecycle';
 
 type UseResourceResponse<T> = {
@@ -27,11 +28,11 @@ type UseResourceResponse<T> = {
 
 type UseResourceOptions<T> = {
   mode: 'PUT',
-  resource: Resource<T>,
+  resource: Resource<T> | string,
   initialState?: T | ResourceState<T>,
 } | {
   mode: 'POST',
-  resource: Resource<any>,
+  resource: Resource<any> | string,
   initialState: T | ResourceState<T>,
 }
 
@@ -91,22 +92,38 @@ type UseResourceOptions<T> = {
  * To do POST requests you must specifiy initialState with the state the user starts
  * off with.
  */
-export function useResource<T>(resource: Resource<T>): UseResourceResponse<T>;
+export function useResource<T>(resource: Resource<T>|string): UseResourceResponse<T>;
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
-export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>): UseResourceResponse<T> {
+export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
+
+  const kettingContext = useContext(getKettingContext());
 
   let resource: Resource<T>;
   let mode : 'PUT' | 'POST';
   let initialState: ResourceState<T> | T | undefined;
-  if (arg1 instanceof Resource) {
+  if (typeof arg1 === 'string') {
+    if (!kettingContext.client) {
+      throw new Error('To use useResource with a string argument, you must have a <KettingProvider> component set up');
+    }
+    resource = kettingContext.client.go(arg1);
+  } else if (arg1 instanceof Resource) {
     resource = arg1;
     mode = 'PUT';
     initialState = undefined;
   } else {
-    resource = arg1.resource;
+    if (typeof arg1.resource === 'string') {
+      if (!kettingContext.client) {
+        throw new Error('To use useResource with a string argument, you must have a <KettingProvider> component set up');
+      }
+      resource = kettingContext.client.go(arg1.resource);
+    } else {
+      resource = arg1.resource;
+    }
     mode = arg1.mode;
     initialState = arg1.initialState;
   }
+
+
 
   const isMounted = useRef(true);
 
