@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Resource, State as ResourceState } from 'ketting';
+import { getKettingContext } from '../provider';
 
 type UseReadResourceResult<T> = {
 
@@ -48,7 +49,18 @@ type UseReadResourceResult<T> = {
  * </pre>
  *
  */
-export function useReadResource<T>(resource: Resource<T>): UseReadResourceResult<T> {
+export function useReadResource<T>(resource: Resource<T> | string): UseReadResourceResult<T> {
+
+  const kettingContext = useContext(getKettingContext());
+  let res: Resource;
+  if (typeof resource === 'string') {
+    if (!kettingContext.client) {
+      throw new Error('To use useReadResource with a string argument, you must have a <KettingProvider> component set up');
+    }
+    res = kettingContext.client.go(resource);
+  } else {
+    res = resource;
+  }
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error|null>(null);
@@ -66,11 +78,11 @@ export function useReadResource<T>(resource: Resource<T>): UseReadResourceResult
 
     (async() => {
 
-      const state = await resource.get();
+      const state = await res.get();
       setResourceState(state);
       setLoading(false);
 
-      resource.on('update', onUpdate.current);
+      res.on('update', onUpdate.current);
 
     })().catch(err => {
 
@@ -82,11 +94,11 @@ export function useReadResource<T>(resource: Resource<T>): UseReadResourceResult
     return function cleanup() {
 
       isMounted.current = false;
-      resource.off('update', onUpdate.current);
+      res.off('update', onUpdate.current);
 
     };
 
-  }, [resource]);
+  }, [res]);
 
   return {
     loading,
