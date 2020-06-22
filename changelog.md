@@ -1,6 +1,18 @@
 Changelog
 =========
 
+0.7.0 (2020-06-22)
+------------------
+
+* `useResource()` can now take a URI argument instead of a Resource object.
+* `useResource()` can also take a Promise that resolves to a resource.
+* Added a `KettingProvider` component, giving any component access to the
+  closest Ketting client via `useContext` / `contextType`.
+* Added a `useClient` hook to easily find the Client object in functional
+  components.
+
+
+
 0.6.9 (2020-06-22)
 ------------------
 
