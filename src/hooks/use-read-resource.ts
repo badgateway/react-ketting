@@ -64,7 +64,7 @@ export function useReadResource<T>(resource: ResourceLike<T>): UseReadResourceRe
   useEffect(() => {
 
     if (!res) {
-      resolveResource(res, kettingContext)
+      resolveResource(resource, kettingContext)
         .then( result => { setRes(result) })
         .catch( err => {
           setError(err);
