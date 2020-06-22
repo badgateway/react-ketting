@@ -190,6 +190,100 @@ there to inspect the new state, causing an update to `data` as well.
 Any subsequent calls to `submit()` will not do new `POST` requests. Instead,
 it will do `PUT` requests to the newly created resource.
 
+API Documentation
+-----------------
+
+### useResource
+
+The useResource hooks manages the entire lifecycle of the state of a resource.
+A resource typically refers to something with a single url.
+
+To call it, you must pass a url, or a resource object.
+
+Resource objects can be obtained from the ketting client or via other resources
+through following hyperlinks.
+
+Examples:
+
+```typescript
+const { loading, error, data } = useResource('/article/1');
+const { loading, error, data } = useResource({
+  resource: '/article/'
+  mode: 'POST',
+  initialData: { foo: 'bar' },
+});
+
+
+// Or with the Ketting client.
+const client = useClient();
+const resource = client.go('/article/1');
+const { loading, error, data } = useResource('/article/1');
+```
+
+Return values:
+
+* `loading` - Will turn to true as soon as loading is complete, or there was an
+  error.
+* `error` - Will have a Javascript `Error` object.
+* `data`- The data received from the server.
+* `setData(data: T)` Updates the internal cache for the resource. One thing to
+  note is if you use the same resource (with the same URI) in different
+  components, all of them will receive an automatic state update.
+* `submit()` - When you are all done, `submit()` will turn your Article in a
+  JSON object and send it to the server with `PUT`.
+* `resourceState` - A more complete complex version of the `data` property. It
+  will also have some HTTP response headers, access to links (from the `Link`
+  header, or from the body if the format was HAL, JSON:API, Siren,
+  Collection+JSON, etc.
+* `setResourceState` - Similar to setData, but needs an entire Ketting State
+  object.
+
+### useClient
+
+Gives you direct access to the Ketting client. For this to work, the
+`KettingProvider` must be set up.
+
+Examples:
+
+```typescript
+const client = useClient();
+```
+
+The client allows you to get direct access to Ketting Resource objects:
+
+```typescript
+const resource = client.go('/foo/bar');
+```
+
+If your API uses Web Links on the home document, you can also follow these
+links to find resources:
+
+```typescript
+const resource = client.follow('article-collection');
+```
+
+You can also setup Fetch middlewares:
+
+```typescript
+client.use( (request, next) => {
+
+  request.headers.set('Authorization', 'Bar');
+
+});
+```
+
+Or use one of the built-in advanced middlewares:
+
+```typescript
+import { oauth2 } from 'ketting';
+
+client.use(oauth2({
+  grantType: 'authorization_code',
+  clientId: 'fooClient',
+  code: '...',
+  tokenEndpointUri: 'https://api.example.org/oauth/token',
+});
+```
 
 [1]: https://reactjs.org/
 [2]: https://reactjs.org/docs/hooks-intro.html
