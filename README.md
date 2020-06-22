@@ -268,6 +268,7 @@ You can also setup Fetch middlewares:
 client.use( (request, next) => {
 
   request.headers.set('Authorization', 'Bar');
+  return next(request);
 
 });
 ```
