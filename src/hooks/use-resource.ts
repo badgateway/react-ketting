@@ -124,7 +124,6 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): 
   }
 
 
-
   const isMounted = useRef(true);
 
   const [resourceState, setResourceState] = useState<ResourceState<T>>();
