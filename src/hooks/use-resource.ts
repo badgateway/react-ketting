@@ -2,6 +2,7 @@ import { Resource, State as ResourceState } from 'ketting';
 import { useRef, useState, useEffect, useContext } from 'react';
 import { getKettingContext } from '../provider';
 import ResourceLifecycle from '../resource-lifecycle';
+import { ResourceLike, resolveResource } from '../util';
 
 type UseResourceResponse<T> = {
 
@@ -28,11 +29,11 @@ type UseResourceResponse<T> = {
 
 type UseResourceOptions<T> = {
   mode: 'PUT',
-  resource: Resource<T> | string,
+  resource: ResourceLike<T>,
   initialState?: T | ResourceState<T>,
 } | {
   mode: 'POST',
-  resource: Resource<any> | string,
+  resource: ResourceLike<T>,
   initialState: T | ResourceState<T>,
 }
 
@@ -97,32 +98,21 @@ export function useResource<T>(options: UseResourceOptions<T>): UseResourceRespo
 export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
   const kettingContext = useContext(getKettingContext());
+  const [resource, setResource] = useState<Resource<T>>();
 
-  let resource: Resource<T>;
+  let resourceLike: ResourceLike<T>;
+
   let mode : 'PUT' | 'POST';
   let initialState: ResourceState<T> | T | undefined;
-  if (typeof arg1 === 'string') {
-    if (!kettingContext.client) {
-      throw new Error('To use useResource with a string argument, you must have a <KettingProvider> component set up');
-    }
-    resource = kettingContext.client.go(arg1);
-  } else if (arg1 instanceof Resource) {
-    resource = arg1;
-    mode = 'PUT';
-    initialState = undefined;
-  } else {
-    if (typeof arg1.resource === 'string') {
-      if (!kettingContext.client) {
-        throw new Error('To use useResource with a string argument, you must have a <KettingProvider> component set up');
-      }
-      resource = kettingContext.client.go(arg1.resource);
-    } else {
-      resource = arg1.resource;
-    }
+  if (isUseResourceOptions(arg1)) {
+    resourceLike = arg1.resource;
     mode = arg1.mode;
     initialState = arg1.initialState;
+  } else {
+    resourceLike = arg1;
+    mode = 'PUT';
+    initialState = undefined;
   }
-
 
   const isMounted = useRef(true);
 
@@ -133,6 +123,15 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): 
   const lifecycle = useRef<ResourceLifecycle<T>>();
 
   useEffect( () => {
+    if (!resource) {
+      resolveResource(resourceLike, kettingContext)
+        .then( res => { setResource(res) })
+        .catch( err => {
+          setError(err);
+          setLoading(false);
+        });
+      return;
+    }
     const onUpdate = (state: ResourceState<T>) => {
       if (isMounted.current) {
         setResourceState(state.clone());
@@ -194,5 +193,12 @@ export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): 
       }
     };
   }
+
+}
+
+
+function isUseResourceOptions<T>(input: any | UseResourceOptions<T>): input is UseResourceOptions<T> {
+
+  return input.mode === 'PUT' || input.mode === 'POST';
 
 }

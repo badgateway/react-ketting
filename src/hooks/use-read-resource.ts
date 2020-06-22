@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Resource, State as ResourceState } from 'ketting';
 import { getKettingContext } from '../provider';
+import { ResourceLike ,resolveResource } from '../util';
 
 type UseReadResourceResult<T> = {
 
@@ -49,26 +50,28 @@ type UseReadResourceResult<T> = {
  * </pre>
  *
  */
-export function useReadResource<T>(resource: Resource<T> | string): UseReadResourceResult<T> {
+export function useReadResource<T>(resource: ResourceLike<T>): UseReadResourceResult<T> {
 
   const kettingContext = useContext(getKettingContext());
-  let res: Resource;
-  if (typeof resource === 'string') {
-    if (!kettingContext.client) {
-      throw new Error('To use useReadResource with a string argument, you must have a <KettingProvider> component set up');
-    }
-    res = kettingContext.client.go(resource);
-  } else {
-    res = resource;
-  }
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error|null>(null);
   const [resourceState, setResourceState] = useState<ResourceState<T>>();
+  const [res, setRes] = useState<Resource<T>>();
 
   const isMounted = useRef(true);
 
   useEffect(() => {
+
+    if (!res) {
+      resolveResource(res, kettingContext)
+        .then( result => { setRes(result) })
+        .catch( err => {
+          setError(err);
+          setLoading(false);
+        });
+      return;
+    }
 
     const onUpdate = useRef((state: ResourceState<T>) => {
       if (isMounted.current) {

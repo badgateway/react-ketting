@@ -217,8 +217,14 @@ const { loading, error, data } = useResource({
 // Or with the Ketting client.
 const client = useClient();
 const resource = client.go('/article/1');
-const { loading, error, data } = useResource('/article/1');
+const { loading, error, data } = useResource(resource);
+
+// Or as the result of a promise
+const client = useClient();
+const resource = client.go('/article/1');
+const { loading, error, data } = useResource(resource.follow('author'));
 ```
+
 
 Return values:
 
@@ -268,6 +274,7 @@ You can also setup Fetch middlewares:
 client.use( (request, next) => {
 
   request.headers.set('Authorization', 'Bar');
+  return next(request);
 
 });
 ```
