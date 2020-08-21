@@ -93,9 +93,9 @@ type UseResourceOptions<T> = {
  * To do POST requests you must specifiy initialState with the state the user starts
  * off with.
  */
-export function useResource<T>(resource: Resource<T>|string): UseResourceResponse<T>;
+export function useResource<T>(resource: ResourceLike<T>|string): UseResourceResponse<T>;
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
-export function useResource<T>(arg1: Resource<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
+export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
   const kettingContext = useContext(getKettingContext());
   const [resource, setResource] = useState<Resource<T>>();

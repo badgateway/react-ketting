@@ -1,6 +1,13 @@
 Changelog
 =========
 
+0.7.1 (2020-08-21)
+------------------
+
+* `useResource` can now take a Promise that resolves to a resource from its
+  first argument.
+* `ResourceLike` is now exported.
+
 0.7.0 (2020-06-22)
 ------------------
 
