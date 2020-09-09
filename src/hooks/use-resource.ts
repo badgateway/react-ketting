@@ -125,7 +125,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
   useEffect( () => {
     if (!resource) {
       resolveResource(resourceLike, kettingContext)
-        .then( res => { setResource(res) })
+        .then( res => { setResource(res); })
         .catch( err => {
           setError(err);
           setLoading(false);
@@ -136,7 +136,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       if (isMounted.current) {
         setResourceState(state.clone());
       }
-    }
+    };
     lifecycle.current = new ResourceLifecycle(resource, mode, initialState, onUpdate);
 
     (async() => {
@@ -149,10 +149,8 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
     return function cleanup() {
       lifecycle.current!.cleanup();
-    }
+    };
   }, [resource]);
-
-  const activeResource = useRef(resource);
 
   if (loading) {
     return {
@@ -169,7 +167,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       submit: () => {
         throw new Error('Loading must complete before calling submit');
       }
-    }
+    };
 
   } else {
 
