@@ -65,7 +65,7 @@ export function useReadResource<T>(resource: ResourceLike<T>): UseReadResourceRe
 
     if (!res) {
       resolveResource(resource, kettingContext)
-        .then( result => { setRes(result) })
+        .then( result => { setRes(result); })
         .catch( err => {
           setError(err);
           setLoading(false);
@@ -92,7 +92,7 @@ export function useReadResource<T>(resource: ResourceLike<T>): UseReadResourceRe
       setLoading(false);
       setError(err);
 
-    })
+    });
 
     return function cleanup() {
 
@@ -107,6 +107,6 @@ export function useReadResource<T>(resource: ResourceLike<T>): UseReadResourceRe
     loading,
     error,
     resourceState: resourceState as ResourceState<T>
-  }
+  };
 
 }

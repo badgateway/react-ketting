@@ -1,12 +1,19 @@
 Changelog
 =========
 
+1.0.0 (2020-09-09)
+------------------
+
+* Ketting 6 got a stable release, so this package gets a 1.0 release as well.
+
+
 0.7.1 (2020-08-21)
 ------------------
 
 * `useResource` can now take a Promise that resolves to a resource from its
   first argument.
 * `ResourceLike` is now exported.
+
 
 0.7.0 (2020-06-22)
 ------------------
