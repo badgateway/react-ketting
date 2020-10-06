@@ -8,7 +8,7 @@ type Props = {
   tokenEndpoint: string;
   authenticatingComponent?: React.ReactNode; 
   children: React.ReactNode;
-  successfulAuthentication: (redirectAfter: string) => void;
+  onSuccess: (state: string|null) => void;
 }
 
 const RequireLogin: React.FC<Props> = (props: Props) => {
@@ -39,8 +39,8 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
             // This 'state' is the OAuth2 state, and we're using it to put a
             // relative url where the user needs to go (in app) after
             // authentication.
-            const redirectAfter: string = searchParams.get('state') || '/';
-            await processCodeFromUrl(code, redirectAfter);
+            const state = searchParams.get('state') || null;
+            await processCodeFromUrl(code, state);
         }
     }
 
@@ -110,7 +110,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
    * This function gets called when we get redirected back from a OAuth2
    * authorization endpoint.
    */
-  const processCodeFromUrl = async  (code: string, redirectAfter: string): Promise<void> => {
+  const processCodeFromUrl = async  (code: string, state: string | null): Promise<void> => {
 
     client.use(oauth2({
       grantType: 'authorization_code',
@@ -129,7 +129,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     }
 
     setAuthenticated(true);
-    props.successfulAuthentication(redirectAfter);
+    props.onSuccess(state);
   }
 
   const storeKettingCredentialsInLocalStorage = async (token: any) => {
