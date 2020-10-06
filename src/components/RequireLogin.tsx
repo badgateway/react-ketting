@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useClient } from '../hooks/use-client';
 import { oauth2 } from 'ketting';
 
@@ -9,6 +8,7 @@ type Props = {
   tokenEndpoint: string;
   authenticatingComponent?: React.ReactNode; 
   children: React.ReactNode;
+  successfulAuthentication: (redirectAfter: string) => void;
 }
 
 const RequireLogin: React.FC<Props> = (props: Props) => {
@@ -18,7 +18,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     validateToken().catch(err => {
-      console.error('Error while validating token', err);
+      console.error('[ketting] Error while validating token', err);
     });
   }, [client]);
 
@@ -64,7 +64,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       try {
         await client.go().get();
         // Keep this message?
-        console.log('Stored credentials were accepted');
+        console.log('[ketting] Stored credentials were accepted');
         // Authentication succeeded
         setAuthenticated(true);
 
@@ -72,15 +72,15 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
         return;
       } catch (err) {
         if (err.httpCode !== 401) {
-          console.error(err);
+          console.error('[ketting] ', err);
           throw new Error('Got error while accessing api: ' + err.httpCode);
         } else {
-          console.log('Stored credentials were not valid. Lets re-authenticate');
+          console.log('[ketting] Stored credentials were not valid. Lets re-authenticate');
           // Ignore 401 errors, we're gonna re-authenticate
         }
       }
     } else {
-      console.log('No stored credentials. Redirecting to auth API api');
+      console.log('[ketting] No stored credentials. Redirecting to auth API api');
     }
 
     // IF we got here it means we didn't have tokens in LocalStorage, or they
@@ -129,8 +129,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     }
 
     setAuthenticated(true);
-    const history = useHistory();
-    history.push(redirectAfter);
+    props.successfulAuthentication(redirectAfter);
   }
 
   const storeKettingCredentialsInLocalStorage = async (token: any) => {
