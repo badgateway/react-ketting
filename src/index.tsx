@@ -7,3 +7,5 @@ export { getKettingContext, KettingProvider } from './provider';
 export { withResource } from './hoc';
 
 export { ResourceLike } from './util';
+
+export { RequireLogin } from './components/RequireLogin';
