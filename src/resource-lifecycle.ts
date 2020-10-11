@@ -45,7 +45,7 @@ export default class ResourceLifecycle<T extends any> {
     if (!this.currentState) {
       this.currentState = await this.currentResource.get();
     }
-    return this.currentResource.get();
+    return this.currentState;
 
   }
 
