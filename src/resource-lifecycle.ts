@@ -42,8 +42,8 @@ export default class ResourceLifecycle<T extends any> {
 
   async getState(): Promise<State<T>> {
 
-    if (this.currentState) {
-      return this.currentState;
+    if (!this.currentState) {
+      this.currentState = await this.currentResource.get();
     }
     return this.currentResource.get();
 
