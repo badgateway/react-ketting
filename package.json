@@ -37,23 +37,23 @@
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "react": "^16.13.1",
-    "ketting": "^6.0.0-alpha.7"
+    "ketting": "^6.1.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.12",
+    "@types/chai": "^4.2.13",
     "@types/mocha": "^8.0.3",
-    "@types/node": "^12.12.56",
-    "@types/react": "^16.9.49",
-    "@typescript-eslint/eslint-plugin": "^4.1.0",
-    "@typescript-eslint/parser": "^4.1.0",
+    "@types/node": "^12.12.67",
+    "@types/react": "^16.9.52",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
     "chai": "^4.2.0",
-    "eslint": "^7.8.1",
-    "ketting": "^6.0.0",
+    "eslint": "^7.11.0",
+    "ketting": "^6.1.0",
     "mocha": "^8.1.3",
     "nyc": "^15.1.0",
     "react": "^16.13.1",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.3"
   },
   "nyc": {
     "extension": [

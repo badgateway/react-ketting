@@ -1,6 +1,16 @@
 Changelog
 =========
 
+1.1.0 (2020-10-11)
+-----------------
+
+* Added a `RequireLogin` component. If you're using the OAuth2
+ `authorization_code` flow, this component can do most of the work to set this
+ up, and set the correct access/refresh tokens in Ketting. It uses
+ LocalStorage to save the tokens. (@simistern)
+* Fix a bug related to `useResource` and `setData`.
+
+
 1.0.0 (2020-09-09)
 ------------------
 
