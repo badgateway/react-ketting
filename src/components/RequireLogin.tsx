@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useClient } from '../hooks/use-client';
 import { oauth2 } from 'ketting';
+
+const { useEffect, useState } = React;
 
 type Props = {
   clientId: string;
