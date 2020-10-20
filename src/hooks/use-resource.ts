@@ -25,6 +25,9 @@ type UseResourceResponse<T> = {
   // Update the data from the state.
   setData: (newData: T) => void;
 
+  // The 'real' resource.
+  resource: Resource<T>;
+
 }
 
 type UseResourceOptions<T> = {
@@ -157,6 +160,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       loading,
       error,
       resourceState: resourceState as ResourceState<T>,
+      resource: resource as Resource<T>,
       data: (resourceState ? resourceState.data : undefined) as T,
       setResourceState: (state: ResourceState<T>) => {
         throw new Error('Loading must complete before calling setResourceState');
@@ -179,6 +183,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       loading,
       error,
       resourceState: resourceState as ResourceState<T>,
+      resource: resource as Resource<T>,
       data: (resourceState ? resourceState.data : undefined) as T,
       setResourceState: (state: ResourceState<T>) => {
         return lifecycle.current!.setState(state);
