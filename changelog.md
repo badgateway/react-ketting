@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.0 (2020-10-20)
+------------------
+
+* Added a `useCollection` hook, for easily traversing a collection of
+  resources.
+* The `useResource` hook now also emits the 'real' resource that was used.
+
+
 1.1.0 (2020-10-11)
 -----------------
 
