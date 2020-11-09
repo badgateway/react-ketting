@@ -5,14 +5,61 @@ import { oauth2 } from 'ketting';
 const { useEffect, useState } = React;
 
 type Props = {
+  /**
+   * OAuth2 Client ID
+   */
   clientId: string;
+
+  /**
+   * OAuth2 authorize endpoint.
+   *
+   * For example https://my-server/authorize
+   */
   authorizeEndpoint: string;
+
+  /**
+   * OAuth2 token endpoint
+   *
+   * For example: https://my-server/token
+   */
   tokenEndpoint: string;
-  authenticatingComponent?: React.ReactNode; 
+
+  /**
+   * If passed, this component will render while authentication is not yet
+   * complete.
+   */
+  authenticatingComponent?: React.ReactNode;
+
+  /**
+   * Child components. Will only be rendered after authentication is complete
+   */
   children: React.ReactNode;
+
+  /**
+   * Callback
+   *
+   * Will be triggered when authentication is successful
+   */
   onSuccess: (state: string|null) => void;
+
+  /**
+   * After the authentication process is complete, this component will make 1
+   * GET request to test if it actually worked.
+   *
+   * By default it will use the Ketting bookmark url, but this can be overridden
+   * here.
+   *
+   * If it's set to "null", this test is skipped.
+   */
+  testEndpoint?: string
+
 }
 
+/**
+ * The RequireLogin component ensures that a user is authenticated.
+ *
+ * Children will not be rendered until this is the case.
+ */
 const RequireLogin: React.FC<Props> = (props: Props) => {
 
   const [isAuthenticated, setAuthenticated] = useState(false);
@@ -64,14 +111,18 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       }));
       // Lets test auth.
       try {
-        await client.go().get();
-        // Keep this message?
-        console.log('[ketting] Stored credentials were accepted');
-        // Authentication succeeded
-        setAuthenticated(true);
+        if (props.testEndpoint === null) {
+          console.log('[ketting] Using stored credentials. testEndpoint is disabled.');
+          setAuthenticated(true);
+        } else {
+          await client.go(props.testEndpoint).get();
+          console.log('[ketting] Stored credentials were accepted');
+          // Authentication succeeded
+          setAuthenticated(true);
 
-        // End function
-        return;
+          // End function
+          return;
+        }
       } catch (err) {
         if (err.httpCode !== 401) {
           console.error('[ketting] ', err);
