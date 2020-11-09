@@ -112,11 +112,13 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       // Lets test auth.
       try {
         if (props.testEndpoint === null) {
-          console.log('[ketting] Using stored credentials. testEndpoint is disabled.');
+          console.info('[ketting] Using stored credentials. testEndpoint is disabled.');
           setAuthenticated(true);
         } else {
-          await client.go(props.testEndpoint).get();
-          console.log('[ketting] Stored credentials were accepted');
+          const testResource = client.go(props.testEndpoint);
+          console.info('[ketting] Testing stored credentials on %s', testResource.uri);
+          await testResource.get();
+          console.info('[ketting] Stored credentials were accepted');
           // Authentication succeeded
           setAuthenticated(true);
 
@@ -128,12 +130,12 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
           console.error('[ketting] ', err);
           throw new Error('Got error while accessing api: ' + err.httpCode);
         } else {
-          console.log('[ketting] Stored credentials were not valid. Lets re-authenticate');
+          console.info('[ketting] Stored credentials were not valid. Lets re-authenticate');
           // Ignore 401 errors, we're gonna re-authenticate
         }
       }
     } else {
-      console.log('[ketting] No stored credentials. Redirecting to auth API api');
+      console.info('[ketting] No stored credentials. Redirecting to auth API api');
     }
 
     // IF we got here it means we didn't have tokens in LocalStorage, or they
