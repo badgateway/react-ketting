@@ -102,7 +102,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
   const [resourceLike, mode, initialData] = getUseResourceOptions(arg1);
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
   const [resourceState, setResourceState] = useResourceState(resourceLike, initialData);
-  const [loading, setLoading] = useState(resourceState !== undefined);
+  const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
   const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(mode);
 
