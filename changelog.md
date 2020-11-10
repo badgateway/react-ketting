@@ -8,6 +8,8 @@ Changelog
   `useResource`.
 * Handle expired Access / Refresh tokens better. We now send the user back
   into the authentication process.
+* Added the ability to override the endpoint `RequireLogin` uses to test if
+  the Bearer token is correct.
 
 
 1.2.0 (2020-10-20)
