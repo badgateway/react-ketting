@@ -157,7 +157,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
         setLoading(false);
       });
 
-  });
+  }, [resource]);
 
   const result = {
     loading,
@@ -202,7 +202,6 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
   };
 
-  console.log(result);
   return result;
 
 }
