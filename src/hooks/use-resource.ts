@@ -100,9 +100,10 @@ export function useResource<T>(resource: ResourceLike<T>|string): UseResourceRes
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
 export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
+  // Get the global ketting client.
   const kettingContext = useContext(getKettingContext());
-  const [resource, setResource] = useState<Resource<T>>();
 
+  // A Resource, Promise<Resource>, or uri
   let resourceLike: ResourceLike<T>;
 
   let mode : 'PUT' | 'POST';
@@ -117,10 +118,20 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     initialState = undefined;
   }
 
+  // The resource variable will contain the real resource.
+  // If we already had a resource, use that, otherwise resolve it later.
+  const [resource, setResource] = useState<Resource<T>|null>(
+    resourceLike instanceof Resource ? resourceLike : null
+  );
+
+  // We're tracking this to ensure that we're not doing state updates after
+  // an unmount.
   const isMounted = useRef(true);
 
-  const [resourceState, setResourceState] = useState<ResourceState<T>>();
-  const [loading, setLoading] = useState(true);
+  const cacheState = !initialState && resource ? resource.client.cache.get(resource.uri) : null;
+
+  const [resourceState, setResourceState] = useState<ResourceState<T>|null>(cacheState);
+  const [loading, setLoading] = useState(!cacheState);
   const [error, setError] = useState<null|Error>(null);
 
   const lifecycle = useRef<ResourceLifecycle<T>>();
