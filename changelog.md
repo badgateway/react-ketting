@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.2.1 (2020-11-09)
------------------
+1.3.0 (2020-11-09)
+------------------
 
 * Fewer renders and much faster first render if there's a cached state with
   `useResource`.
