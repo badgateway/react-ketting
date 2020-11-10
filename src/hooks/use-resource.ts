@@ -1,8 +1,7 @@
-import { Resource, State as ResourceState } from 'ketting';
-import { useRef, useState, useEffect, useContext } from 'react';
-import { getKettingContext } from '../provider';
-import ResourceLifecycle from '../resource-lifecycle';
-import { ResourceLike, resolveResource } from '../util';
+import { Resource, State as ResourceState, HalState, isState, Links } from 'ketting';
+import { useState, useEffect } from 'react';
+import { ResourceLike } from '../util';
+import { useClient } from './use-client';
 
 type UseResourceResponse<T> = {
 
@@ -100,119 +99,176 @@ export function useResource<T>(resource: ResourceLike<T>|string): UseResourceRes
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
 export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
-  // Get the global ketting client.
-  const kettingContext = useContext(getKettingContext());
-
-  // A Resource, Promise<Resource>, or uri
-  let resourceLike: ResourceLike<T>;
-
-  let mode : 'PUT' | 'POST';
-  let initialState: ResourceState<T> | T | undefined;
-  if (isUseResourceOptions(arg1)) {
-    resourceLike = arg1.resource;
-    mode = arg1.mode;
-    initialState = arg1.initialState;
-  } else {
-    resourceLike = arg1;
-    mode = 'PUT';
-    initialState = undefined;
-  }
-
-  // The resource variable will contain the real resource.
-  // If we already had a resource, use that, otherwise resolve it later.
-  const [resource, setResource] = useState<Resource<T>|null>(
-    resourceLike instanceof Resource ? resourceLike : null
-  );
-
-  // We're tracking this to ensure that we're not doing state updates after
-  // an unmount.
-  const isMounted = useRef(true);
-
-  const cacheState = !initialState && resource ? resource.client.cache.get(resource.uri) : null;
-
-  const [resourceState, setResourceState] = useState<ResourceState<T>|null>(cacheState);
-  const [loading, setLoading] = useState(!cacheState);
+  const [resourceLike, mode, initialData] = getUseResourceOptions(arg1);
+  const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
+  const [resourceState, setResourceState] = useResourceState(resourceLike, initialData);
+  const [loading, setLoading] = useState(resourceState !== undefined);
   const [error, setError] = useState<null|Error>(null);
+  const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(mode);
 
-  const lifecycle = useRef<ResourceLifecycle<T>>();
+  useEffect(() => {
 
-  useEffect( () => {
+    // This effect is for finding the real Resource object
     if (!resource) {
-      resolveResource(resourceLike, kettingContext)
-        .then( res => { setResource(res); })
-        .catch( err => {
-          setError(err);
-          setLoading(false);
-        });
+      Promise.resolve(resourceLike).then( newRes => {
+        setResource(newRes);
+      }).catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+    }
+
+  }, [resourceLike]);
+
+  useEffect(() => {
+
+    // This effect is for setting up the onUpdate event
+    if (!resource || mode === 'POST') {
       return;
     }
-    const onUpdate = (state: ResourceState<T>) => {
-      if (isMounted.current) {
-        setResourceState(state.clone());
-      }
-    };
-    lifecycle.current = new ResourceLifecycle(resource, mode, initialState, onUpdate);
 
-    (async() => {
-      setResourceState(await lifecycle.current!.getState());
+    const onUpdate = (newState: ResourceState<T>) => {
+      setResourceState(newState);
       setLoading(false);
-    })().catch(err => {
-      setError(err);
-      setLoading(false);
-    });
-
-    return function cleanup() {
-      lifecycle.current!.cleanup();
     };
+    resource.on('update', onUpdate); 
+   
+    return function unmount() {
+      resource.off('update', onUpdate);
+    };
+
   }, [resource]);
 
-  if (loading) {
-    return {
-      loading,
-      error,
-      resourceState: resourceState as ResourceState<T>,
-      resource: resource as Resource<T>,
-      data: (resourceState ? resourceState.data : undefined) as T,
-      setResourceState: (state: ResourceState<T>) => {
-        throw new Error('Loading must complete before calling setResourceState');
-      },
-      setData: (newData: T) => {
-        throw new Error('Loading must complete before calling setData');
-      },
-      submit: () => {
-        throw new Error('Loading must complete before calling submit');
+  useEffect(() => {
+
+    // This effect is for fetching the initial ResourceState
+    if (!resource || resourceState || modeVal === 'POST') {
+      // No need to fetch resourceState 
+      return;
+    }
+    
+    resource.get()
+      .then(newState => {
+        setResourceState(newState);
+        setLoading(false);
+      })
+      .catch(err => {
+        setError(err);
+        setLoading(false);
+      });
+
+  });
+
+  return {
+    loading,
+    error,
+    resourceState: resourceState as ResourceState<T>,
+    setResourceState: (newState: ResourceState<T>) => {
+      if (!resource) {
+        throw new Error('Too early to call setResourceState, we don\'t have a current state to update');
       }
-    };
+      if (modeVal === 'POST') {
+        setResourceState(newState);
+      } else {
+        resource.updateCache(newState);
+      }
+    },
+    resource: resource as Resource<T>,
+    submit: async () => {
+      if (!resourceState || !resource) {
+        throw new Error('Too early to call submit()');
+      }
+      if (modeVal === 'POST') {
+        const newResource = await resource.postFollow(resourceState);
+        setResource(newResource);
+        setModeVal('PUT');
+      } else {
+        await resource.put(resourceState);
+      }
 
-  } else {
-
-    if (lifecycle.current===undefined) {
-      throw new Error('State error: lifecycle is not available after loading is complete. This is a bug');
+    },
+    data: (resourceState?.data) as T,
+    setData: (data: T) => {
+      if (!resourceState || !resource) {
+        throw new Error('Too early to call setData, we don\'t have a current state to update');
+      }
+      resourceState.data = data;
+      if (modeVal === 'POST') {
+        setResourceState(resourceState);
+      } else {
+        resource.updateCache(resourceState);
+      }
     }
 
-    return {
-      loading,
-      error,
-      resourceState: resourceState as ResourceState<T>,
-      resource: resource as Resource<T>,
-      data: (resourceState ? resourceState.data : undefined) as T,
-      setResourceState: (state: ResourceState<T>) => {
-        return lifecycle.current!.setState(state);
-      },
-      setData: (newData: T) => {
-        lifecycle.current!.setData(newData);
-      },
-      submit: () => {
-        return lifecycle.current!.submit();
-      }
-    };
-  }
+  };
 
 }
 
+/**
+ * A helper function to process the overloaded arguments of useResource, and return a consistent result
+ */
+function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined] {
+
+  const client = useClient();
+  let mode : 'POST' | 'PUT';
+  let initialState;
+  let res;
+
+  if (isUseResourceOptions(arg1)) {
+    mode = arg1.mode;
+    initialState = arg1.initialState;
+    res = arg1.resource;
+  } else {
+    mode = 'PUT';
+    initialState = undefined;
+    res = arg1;
+  }
+
+  return [
+    typeof res === 'string' ? client.go(res) : res,
+    mode,
+    initialState
+  ]; 
+
+}
+
+/**
+ * Internal helper hook to deal with setting up the resource state, and
+ * populate the cache.
+ */
+function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, initialData: undefined | T | ResourceState<T>): [ResourceState<T>|undefined, (rs: ResourceState<T>) => void] {
+
+  let data: undefined| ResourceState<T> = undefined;
+  if (initialData) {
+    data = isState(initialData) ? initialData : dataToState(initialData); 
+  } else if (resource instanceof Resource) {
+    data = resource.client.cache.get(resource.uri) || undefined;
+  }
+  const [resourceState, setResourceState] = useState<ResourceState<T>| undefined>(data);
+  return [resourceState, setResourceState];
+
+}
 
 function isUseResourceOptions<T>(input: any | UseResourceOptions<T>): input is UseResourceOptions<T> {
 
   return input.mode === 'PUT' || input.mode === 'POST';
+
+}
+
+/**
+ * Take data and wraps it in a State object.
+ *
+ * For now this will always return a HalState object, because it's a
+ * reasonable default, but this may change in the future.
+ */
+function dataToState<T>(data: T): ResourceState<T> {
+
+  return new HalState(
+    'about:blank',
+    data,
+    new Headers(),
+    new Links('about:blank'),
+    [],
+  );
 
 }
