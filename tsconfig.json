@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2017",
+        "esModuleInterop": true,
+        "target": "es2019",
 
         "strict": true,
         "noFallthroughCasesInSwitch": true,
@@ -19,7 +20,6 @@
         },
         "lib": [
           "DOM",
-          "DOM.Iterable",
           "ES5",
           "ES2015",
           "ES2016",
