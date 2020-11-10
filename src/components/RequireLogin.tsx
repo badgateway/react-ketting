@@ -108,6 +108,13 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
         accessToken: parsedToken.accessToken,
         tokenEndpoint: props.tokenEndpoint,
         onTokenUpdate: (token) => storeKettingCredentialsInLocalStorage(token),
+        onAuthError: async (err) => {
+          console.error('[ketting] Got a deep 401 error, lets re-authenticate');
+
+          // IF we got here it means we didn't have tokens in LocalStorage, or they
+          // were expired.
+          document.location.href = await getAuthorizeUri();
+        }
       }));
       // Lets test auth.
       try {
@@ -174,6 +181,13 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       redirectUri: document.location.origin + '/',
       code: code,
       onTokenUpdate: (token) => storeKettingCredentialsInLocalStorage(token),
+      onAuthError: async (err) => {
+        console.error('[ketting] Got a deep 401 error, lets re-authenticate');
+
+        // IF we got here it means we didn't have tokens in LocalStorage, or they
+        // were expired.
+        document.location.href = await getAuthorizeUri();
+      }
     }));
 
     // Lets test authentication.
