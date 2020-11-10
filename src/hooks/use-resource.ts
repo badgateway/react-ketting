@@ -159,7 +159,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
   });
 
-  return {
+  const result = {
     loading,
     error,
     resourceState: resourceState as ResourceState<T>,
@@ -201,6 +201,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     }
 
   };
+
+  console.log(result);
+  return result;
 
 }
 
