@@ -1,6 +1,15 @@
 Changelog
 =========
 
+1.2.1 (2020-11-09)
+-----------------
+
+* Fewer renders and much faster first render if there's a cached state with
+  `useResource`.
+* Handle expired Access / Refresh tokens better. We now send the user back
+  into the authentication process.
+
+
 1.2.0 (2020-10-20)
 ------------------
 
