@@ -142,9 +142,29 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
   useEffect(() => {
 
     // This effect is for fetching the initial ResourceState
-    if (!resource || resourceState || modeVal === 'POST') {
-      // No need to fetch resourceState
+    if (!resource || modeVal === 'POST') {
+      // No need to fetch resourceState for these cases.
       return;
+    }
+
+    if (resourceState && resourceState.uri === resource.uri) {
+      // Don't do anything if we already have a resourceState, and the
+      // resourceState's uri matches what we got.
+      //
+      // This likely means we got the resourceState from the initial
+      // useResourceState hook.
+      return;
+    }
+
+    // The 'resource' property has changed, so lets get the new resourceState and data.
+    const cachedState = resource.client.cache.get(resource.uri);
+    if (cachedState) {
+      setResourceState(cachedState);
+      setLoading(false);
+      return;
+    } else {
+      setResourceState(undefined);
+      setLoading(true);
     }
 
     resource.get()
@@ -238,7 +258,7 @@ function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|st
  * Internal helper hook to deal with setting up the resource state, and
  * populate the cache.
  */
-function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, initialData: undefined | T | ResourceState<T>): [ResourceState<T>|undefined, (rs: ResourceState<T>) => void] {
+function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, initialData: undefined | T | ResourceState<T>): [ResourceState<T>|undefined, (rs: ResourceState<T>|undefined) => void] {
 
   let data: undefined| ResourceState<T> = undefined;
   if (initialData) {
