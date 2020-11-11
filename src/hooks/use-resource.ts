@@ -168,9 +168,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
         throw new Error('Too early to call setResourceState, we don\'t have a current state to update');
       }
       if (modeVal === 'POST') {
-        setResourceState(newState);
+        setResourceState(newState.clone());
       } else {
-        resource.updateCache(newState);
+        resource.updateCache(newState.clone());
       }
     },
     resource: resource as Resource<T>,
@@ -194,9 +194,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       }
       resourceState.data = data;
       if (modeVal === 'POST') {
-        setResourceState(resourceState);
+        setResourceState(resourceState.clone());
       } else {
-        resource.updateCache(resourceState);
+        resource.updateCache(resourceState.clone());
       }
     }
 
