@@ -1,7 +1,14 @@
 Changelog
 =========
 
-1.3.2 (2020-11-12)
+1.3.3 (2020-11-11)
+------------------
+
+* Make sure `data` and `resourceState` get re-fetched when the resource arg
+  changes in the `useResource` hook.
+
+
+1.3.2 (2020-11-11)
 ------------------
 
 * Guarantee re-render on when `setData()` or `setResourceState()` is used.
