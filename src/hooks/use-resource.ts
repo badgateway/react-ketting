@@ -128,7 +128,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     }
 
     const onUpdate = (newState: ResourceState<T>) => {
-      setResourceState(newState);
+      setResourceState(newState.clone());
       setLoading(false);
     };
     resource.on('update', onUpdate);
@@ -168,9 +168,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
         throw new Error('Too early to call setResourceState, we don\'t have a current state to update');
       }
       if (modeVal === 'POST') {
-        setResourceState(newState.clone());
+        setResourceState(newState);
       } else {
-        resource.updateCache(newState.clone());
+        resource.updateCache(newState);
       }
     },
     resource: resource as Resource<T>,
@@ -194,9 +194,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       }
       resourceState.data = data;
       if (modeVal === 'POST') {
-        setResourceState(resourceState.clone());
+        setResourceState(resourceState);
       } else {
-        resource.updateCache(resourceState.clone());
+        resource.updateCache(resourceState);
       }
     }
 
