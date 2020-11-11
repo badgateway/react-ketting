@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.3.1 (2020-11-11)
+------------------
+
+* Fix an issue with RequireLogin trying to validate a 'code' twice.
+* RequireLogin should be a bi snappier with fewer async ops.
+
+
 1.3.0 (2020-11-09)
 ------------------
 
