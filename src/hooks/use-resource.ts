@@ -147,18 +147,15 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       return;
     }
 
-    if (resourceState && resourceState.uri !== resource.uri) {
-      // The resource state does not match the current resource.
-      // See if we have a cached copy.
-      const cachedState = resource.client.cache.get(resource.uri);
-      if (cachedState) {
-        setResourceState(cachedState);
-        setLoading(false);
-        return;
-      } else {
-        setResourceState(undefined);
-        setLoading(true);
-      }
+    // The 'resource' property has changed, so lets get the new resourceState and data.
+    const cachedState = resource.client.cache.get(resource.uri);
+    if (cachedState) {
+      setResourceState(cachedState);
+      setLoading(false);
+      return;
+    } else {
+      setResourceState(undefined);
+      setLoading(true);
     }
 
     resource.get()
