@@ -110,26 +110,18 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
   useEffect(() => {
 
     // This effect is for finding the real Resource object
-    if (!resource) {
-      if (resourceLike instanceof Resource) {
-        setResource(resourceLike);
-      } else if (typeof resourceLike === 'string') {
-        setResource(client.go(resourceLike));
-      } else {
-        Promise.resolve(resourceLike).then( newRes => {
-          setResource(newRes);
-        }).catch(err => {
-          setError(err);
-          setLoading(false);
-        });
-      }
-
+    if (resourceLike instanceof Resource) {
+      setResource(resourceLike);
+    } else if (typeof resourceLike === 'string') {
+      setResource(client.go(resourceLike));
+    } else {
+      Promise.resolve(resourceLike).then( newRes => {
+        setResource(newRes);
+      }).catch(err => {
+        setError(err);
+        setLoading(false);
+      });
     }
-
-    return function cleanup() {
-      setResource(undefined);
-      setLoading(true);
-    };
 
   }, [resourceLike]);
 
