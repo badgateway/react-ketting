@@ -129,7 +129,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     return function cleanup() {
       setResource(undefined);
       setLoading(true);
-    }
+    };
 
   }, [resourceLike]);
 
