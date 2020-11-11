@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.2 (2020-11-12)
+------------------
+
+* Guarantee re-render on when `setData()` or `setResourceState()` is used.
+
+
 1.3.1 (2020-11-11)
 ------------------
 

@@ -128,7 +128,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     }
 
     const onUpdate = (newState: ResourceState<T>) => {
-      setResourceState(newState);
+      setResourceState(newState.clone());
       setLoading(false);
     };
     resource.on('update', onUpdate);
@@ -149,7 +149,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
     resource.get()
       .then(newState => {
-        setResourceState(newState);
+        setResourceState(newState.clone());
         setLoading(false);
       })
       .catch(err => {
