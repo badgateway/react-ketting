@@ -12,7 +12,7 @@ type UseCollectionResponse<T> = {
    * True if there is no data or no error yet
    */
   loading: boolean;
-  
+
   /**
    * Will contain an Error object if an error occurred anywhere in the
    */
