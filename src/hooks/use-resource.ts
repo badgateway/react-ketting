@@ -147,6 +147,15 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       return;
     }
 
+    if (resourceState && resourceState.uri === resource.uri) {
+      // Don't do anything if we already have a resourceState, and the
+      // resourceState's uri matches what we got.
+      //
+      // This likely means we got the resourceState from the initial
+      // useResourceState hook.
+      return;
+    }
+
     // The 'resource' property has changed, so lets get the new resourceState and data.
     const cachedState = resource.client.cache.get(resource.uri);
     if (cachedState) {
