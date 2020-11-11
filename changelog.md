@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.3.4 (2020-11-11)
+------------------
+
+* Fixing another bug related to prop changes / effects / dependencies in
+  useEffect.
+
+
 1.3.3 (2020-11-11)
 ------------------
 
