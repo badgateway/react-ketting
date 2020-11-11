@@ -131,8 +131,8 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       setResourceState(newState);
       setLoading(false);
     };
-    resource.on('update', onUpdate); 
-   
+    resource.on('update', onUpdate);
+
     return function unmount() {
       resource.off('update', onUpdate);
     };
@@ -143,10 +143,10 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
     // This effect is for fetching the initial ResourceState
     if (!resource || resourceState || modeVal === 'POST') {
-      // No need to fetch resourceState 
+      // No need to fetch resourceState
       return;
     }
-    
+
     resource.get()
       .then(newState => {
         setResourceState(newState);
@@ -230,7 +230,7 @@ function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|st
     typeof res === 'string' ? client.go(res) : res,
     mode,
     initialState
-  ]; 
+  ];
 
 }
 
@@ -242,7 +242,7 @@ function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, i
 
   let data: undefined| ResourceState<T> = undefined;
   if (initialData) {
-    data = isState(initialData) ? initialData : dataToState(initialData); 
+    data = isState(initialData) ? initialData : dataToState(initialData);
   } else if (resource instanceof Resource) {
     data = resource.client.cache.get(resource.uri) || undefined;
   }
