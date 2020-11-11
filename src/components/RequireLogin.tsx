@@ -79,23 +79,24 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
     const location = new URL(document.location.href);
     if (location.search) {
-        // If we have a 'code' query parameter, the client will attempt to authenticate with
-        // the code via oauth2 and attempt to redirect back to your url 
-        const searchParams = new URLSearchParams(location.search.substr(1));
-        if (searchParams.has('code')) {
-            const code: string = searchParams.get('code')!;
+      // If we have a 'code' query parameter, the client will attempt to authenticate with
+      // the code via oauth2 and attempt to redirect back to your url
+      const searchParams = new URLSearchParams(location.search.substr(1));
+      if (searchParams.has('code')) {
+        const code: string = searchParams.get('code')!;
 
-            // This 'state' is the OAuth2 state, and we're using it to put a
-            // relative url where the user needs to go (in app) after
-            // authentication.
-            const state = searchParams.get('state') || null;
-            await processCodeFromUrl(code, state);
-        }
+        // This 'state' is the OAuth2 state, and we're using it to put a
+        // relative url where the user needs to go (in app) after
+        // authentication.
+        const state = searchParams.get('state') || null;
+        await processCodeFromUrl(code, state);
+        return;
+      }
     }
 
     // If we got this far in the function, there was no 'code' in the url.
     // Lets check if we have credentials in LocalStorage.
-    const localStorageAuth = window.localStorage.getItem('ketting-auth:2');
+    const localStorageAuth = window.localStorage.getItem('ketting-auth:3');
 
     if(localStorageAuth){
       // this doesnt feel like a good variable name
@@ -108,12 +109,12 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
         accessToken: parsedToken.accessToken,
         tokenEndpoint: props.tokenEndpoint,
         onTokenUpdate: (token) => storeKettingCredentialsInLocalStorage(token),
-        onAuthError: async (err) => {
+        onAuthError: err => {
           console.error('[ketting] Got a deep 401 error, lets re-authenticate');
 
           // IF we got here it means we didn't have tokens in LocalStorage, or they
           // were expired.
-          document.location.href = await getAuthorizeUri();
+          document.location.href = getAuthorizeUri(props);
         }
       }));
       // Lets test auth.
@@ -147,25 +148,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
     // IF we got here it means we didn't have tokens in LocalStorage, or they
     // were expired.
-    document.location.href = await getAuthorizeUri();
-  }
-
-  /**
-   * This function generates the full OAuth2 authorize urls.
-   */
-  const getAuthorizeUri = async () =>  {
-
-    const currentRoot = document.location.origin + '/';
-    const currentPath = document.location.pathname;
-
-    const params = new URLSearchParams([
-      ['response_type', 'code'],
-      ['client_id', props.clientId],
-      ['redirect_uri', currentRoot],
-      ['state', currentPath],
-    ]);
-
-    return props.authorizeEndpoint + '?' + params.toString();
+    document.location.href = getAuthorizeUri(props);
   }
 
   /**
@@ -181,12 +164,12 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       redirectUri: document.location.origin + '/',
       code: code,
       onTokenUpdate: (token) => storeKettingCredentialsInLocalStorage(token),
-      onAuthError: async (err) => {
+      onAuthError: err => {
         console.error('[ketting] Got a deep 401 error, lets re-authenticate');
 
         // IF we got here it means we didn't have tokens in LocalStorage, or they
         // were expired.
-        document.location.href = await getAuthorizeUri();
+        document.location.href = getAuthorizeUri(props);
       }
     }));
 
@@ -205,7 +188,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     // Store credentials.
     // ? Should this be custom-set by the user?
     window.localStorage.setItem(
-      'ketting-auth:2',
+      'ketting-auth:3',
       JSON.stringify(token)
     );
   }
@@ -213,9 +196,9 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
   // A custom "authenticating" component can also be passed in instead
   return (
     <>
-      {props.authenticatingComponent ? 
+      {props.authenticatingComponent ?
         (props.authenticatingComponent)
-        : 
+        :
         (
           <div className='authenticating'>
             <header><h1>Authenticating</h1></header>
@@ -224,6 +207,25 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       }
     </>
   );
+}
+
+
+/**
+ * Generates the full URL to redirect the user to for the OAuth2 authorization
+ * endpoint.
+ */
+function getAuthorizeUri(props: { clientId: string, authorizeEndpoint: string }): string {
+  const currentRoot = document.location.origin + '/';
+  const currentPath = document.location.pathname;
+
+  const params = new URLSearchParams([
+    ['response_type', 'code'],
+    ['client_id', props.clientId],
+    ['redirect_uri', currentRoot],
+    ['state', currentPath],
+  ]);
+
+  return props.authorizeEndpoint + '?' + params.toString();
 }
 
 export { RequireLogin };
