@@ -1,6 +1,6 @@
 import { Resource } from 'ketting';
 import { useState, useEffect } from 'react';
-import { ResourceLike, resolveResource } from '../util';
+import { ResourceLike } from '../util';
 import { useResolveResource } from './use-resolve-resource';
 
 /**
