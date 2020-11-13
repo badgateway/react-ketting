@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.3.6 (2020-11-13)
+------------------
+
+* Refresh "items" in `useCollection` if the resource argument changed.
+
+
 1.3.5 (2020-11-11)
 ------------------
 
