@@ -1,7 +1,7 @@
 import { Resource } from 'ketting';
-import { useState, useEffect, useContext } from 'react';
-import { getKettingContext } from '../provider';
+import { useState, useEffect } from 'react';
 import { ResourceLike, resolveResource } from '../util';
+import { useResolveResource } from './use-resolve-resource';
 
 /**
  * The result of a useCollection hook.
@@ -72,28 +72,26 @@ type UseCollectionOptions = {
  * * items - Will contain an array of resources, each typed Resource<T> where
  *           T is the passed generic argument.
  */
-export function useCollection<T>(resourceLike: ResourceLike<T>|string, options?: UseCollectionOptions): UseCollectionResponse<T> {
+export function useCollection<T>(resourceLike: ResourceLike<T>, options?: UseCollectionOptions): UseCollectionResponse<T> {
 
   const rel = options?.rel || 'item';
 
-  const kettingContext = useContext(getKettingContext());
-  const [resource, setResource] = useState<Resource<T>|null>(
-    resourceLike instanceof Resource ? resourceLike : null
-  );
+  const { resource, error: resolveError } = useResolveResource(resourceLike);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null|Error>(null);
   const [items, setItems] = useState<Resource<T>[]>([]);
 
   useEffect( () => {
+    if (resolveError) {
+      setError(resolveError);
+      setLoading(false);
+      return;
+    }
     if (!resource) {
-      // No real resource yet, let's find it.
-      resolveResource(resourceLike, kettingContext)
-        .then( res => { setResource(res); })
-        .catch( err => {
-          setError(err);
-          setLoading(false);
-        });
+      // No resource yet, lets wait for it.
+      setLoading(true);
+      setItems([]);
       return;
     }
     // Now we got a resource, let's find its children.
