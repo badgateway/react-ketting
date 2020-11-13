@@ -107,7 +107,7 @@ export function useCollection<T>(resourceLike: ResourceLike<T>, options?: UseCol
         setLoading(false);
       });
 
-  }, [resource]);
+  }, [resource, resolveError]);
 
   return {
     loading,
