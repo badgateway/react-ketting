@@ -5,7 +5,6 @@ build: tsbuild
 
 .PHONY: clean
 clean:
-	-rm -r browser/
 	-rm -r dist/
 
 .PHONY: test
