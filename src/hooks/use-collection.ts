@@ -1,4 +1,4 @@
-import { Resource } from 'ketting';
+import { Resource, State as ResourceState } from 'ketting';
 import { useState, useEffect } from 'react';
 import { ResourceLike } from '../util';
 import { useResolveResource } from './use-resolve-resource';
@@ -39,6 +39,15 @@ type UseCollectionOptions = {
    * Change this option to follow a list of other links.
    */
   rel?: string;
+
+  /**
+   * If the collection receives 'stale' events and this is set to true,
+   * this will automatically grab the latest version from the server.
+   *
+   * 'stale' events are emitted by a number of different processes, such as
+   * unsafe methods on the collection, or even manually triggered.
+   */
+  refreshOnStale?: boolean;
 }
 
 /**
@@ -106,6 +115,30 @@ export function useCollection<T>(resourceLike: ResourceLike<T>, options?: UseCol
         setError(err);
         setLoading(false);
       });
+
+    const updateHandler = (newState: ResourceState) => {
+      const newItems = newState.links.getMany(rel)
+        .map(link => resource.go(link.href));
+      setItems(newItems);
+    };
+
+    const staleHandler = () => {
+      if (options?.refreshOnStale) {
+        resource
+          .refresh()
+          .catch(err => {
+            setError(err);
+          });
+      }
+    };
+
+    resource.on('update', updateHandler);
+    resource.on('stale', staleHandler);
+
+    return function cleanup() {
+      resource.off('update', updateHandler);
+      resource.off('stale', staleHandler);
+    };
 
   }, [resource, resolveError]);
 
