@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.4.0 (2020-11-24)
+------------------
+
+* Add 'refreshOnStale' option to `useCollection`, to automatically fetch new
+  items if the collection is known to have changed.
+
+
 1.3.6 (2020-11-13)
 ------------------
 
