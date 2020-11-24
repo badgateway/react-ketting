@@ -138,7 +138,7 @@ export function useCollection<T>(resourceLike: ResourceLike<T>, options?: UseCol
     return function cleanup() {
       resource.off('update', updateHandler);
       resource.off('stale', staleHandler);
-    }
+    };
 
   }, [resource, resolveError]);
 
