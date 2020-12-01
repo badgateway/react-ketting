@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.4.1 (2020-12-01)
+------------------
+
+* Update ketting and fetch-mw-oauth2
+* expireAt for oauth2 token is now preserved via LocalStorage.
+
+
 1.4.0 (2020-11-24)
 ------------------
 
