@@ -37,7 +37,7 @@
   "types": "dist/index.d.ts",
   "peerDependencies": {
     "react": "^16.13.1",
-    "ketting": "^6.1.2"
+    "ketting": "^6.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.14",
