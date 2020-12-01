@@ -1,8 +1,11 @@
 import * as React from 'react';
 import { useClient } from '../hooks/use-client';
 import { oauth2 } from 'ketting';
+import { OAuth2Token } from 'fetch-mw-oauth2';
 
 const { useEffect, useState } = React;
+
+const LOCALSTORAGEKEY = 'ketting-auth:3';
 
 type Props = {
   /**
@@ -96,17 +99,15 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
     // If we got this far in the function, there was no 'code' in the url.
     // Lets check if we have credentials in LocalStorage.
-    const localStorageAuth = window.localStorage.getItem('ketting-auth:3');
+    const localStorageAuth = window.localStorage.getItem(LOCALSTORAGEKEY);
 
     if(localStorageAuth){
       // this doesnt feel like a good variable name
-      const parsedToken = JSON.parse(localStorageAuth);
+      const parsedToken:OAuth2Token = JSON.parse(localStorageAuth);
 
       client.use(oauth2({
         grantType: undefined,
         clientId: props.clientId,
-        refreshToken: parsedToken.refreshToken,
-        accessToken: parsedToken.accessToken,
         tokenEndpoint: props.tokenEndpoint,
         onTokenUpdate: (token) => storeKettingCredentialsInLocalStorage(token),
         onAuthError: err => {
@@ -116,7 +117,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
           // were expired.
           document.location.href = getAuthorizeUri(props);
         }
-      }));
+      }, parsedToken));
       // Lets test auth.
       try {
         if (props.testEndpoint === null) {
@@ -184,11 +185,11 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     props.onSuccess(state);
   }
 
-  const storeKettingCredentialsInLocalStorage = async (token: any) => {
+  const storeKettingCredentialsInLocalStorage = async (token: OAuth2Token) => {
     // Store credentials.
     // ? Should this be custom-set by the user?
     window.localStorage.setItem(
-      'ketting-auth:3',
+      LOCALSTORAGEKEY,
       JSON.stringify(token)
     );
   }
