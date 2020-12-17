@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.4.2 (2020-12-17)
+------------------
+
+* The 'type' of the result of useCollection is not dependent on the 'type'
+  of the collection that was passed it. This was a bug in `useCollection`.
+
+
 1.4.1 (2020-12-01)
 ------------------
 
