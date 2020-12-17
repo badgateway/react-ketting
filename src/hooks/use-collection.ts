@@ -81,7 +81,7 @@ type UseCollectionOptions = {
  * * items - Will contain an array of resources, each typed Resource<T> where
  *           T is the passed generic argument.
  */
-export function useCollection<T>(resourceLike: ResourceLike<T>, options?: UseCollectionOptions): UseCollectionResponse<T> {
+export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UseCollectionResponse<T> {
 
   const rel = options?.rel || 'item';
 
