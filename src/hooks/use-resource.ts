@@ -33,10 +33,12 @@ type UseResourceOptions<T> = {
   mode: 'PUT',
   resource: ResourceLike<T>,
   initialState?: T | ResourceState<T>,
+  refreshOnStale?: boolean,
 } | {
   mode: 'POST',
   resource: ResourceLike<T>,
   initialState: T | ResourceState<T>,
+  refreshOnStale?: boolean,
 }
 
 /**
@@ -99,7 +101,7 @@ export function useResource<T>(resource: ResourceLike<T>|string): UseResourceRes
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
 export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
-  const [resourceLike, mode, initialData] = getUseResourceOptions(arg1);
+  const [resourceLike, mode, initialData, refreshOnStale] = getUseResourceOptions(arg1);
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
   const [resourceState, setResourceState] = useResourceState(resourceLike, initialData);
   const [loading, setLoading] = useState(resourceState === undefined);
@@ -136,10 +138,23 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
       setResourceState(newState.clone());
       setLoading(false);
     };
+
+    const onStale = () => {
+      if (refreshOnStale) {
+        resource
+          .refresh()
+          .catch(err => {
+            setError(err);
+          });
+      }
+    };
+
     resource.on('update', onUpdate);
+    resource.on('stale', onStale);
 
     return function unmount() {
       resource.off('update', onUpdate);
+      resource.off('stale', onStale);
     };
 
   }, [resource]);
@@ -234,27 +249,31 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 /**
  * A helper function to process the overloaded arguments of useResource, and return a consistent result
  */
-function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined] {
+function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined, boolean] {
 
   const client = useClient();
   let mode : 'POST' | 'PUT';
   let initialState;
   let res;
+  let refreshOnStale;
 
   if (isUseResourceOptions(arg1)) {
     mode = arg1.mode;
     initialState = arg1.initialState;
     res = arg1.resource;
+    refreshOnStale = arg1.refreshOnStale ?? false;
   } else {
     mode = 'PUT';
     initialState = undefined;
     res = arg1;
+    refreshOnStale = false;
   }
 
   return [
     typeof res === 'string' ? client.go(res) : res,
     mode,
-    initialState
+    initialState,
+    refreshOnStale,
   ];
 
 }
