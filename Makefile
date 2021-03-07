@@ -1,35 +1,38 @@
-export PATH:=./node_modules/.bin/:$(PATH)
+SOURCE_FILES:=$(shell find src/ -type f -name '*.ts')
 
-.PHONY: build
-build: tsbuild
+.PHONY:all
+all: build
 
-.PHONY: clean
-clean:
-	-rm -r dist/
+.PHONY:build
+build: dist/build
 
-.PHONY: test
-test: lint
-	nyc mocha
+.PHONY:test
+test:
+	node_modules/.bin/nyc node_modules/.bin/mocha
 
-.PHONY: test-debug
-test-debug:
-	mocha --inspect-brk
-
-.PHONY: lint
+.PHONY:lint
 lint:
-	./node_modules/.bin/eslint --quiet 'src/**/*.ts' 'test/**/*.ts'
+	node_modules/.bin/eslint --quiet 'src/*.ts' 'test/*.ts'
 
-.PHONY: fix
+.PHONY:lint-fix
+lint-fix: fix
+
+.PHONY:fix
 fix:
-	./node_modules/.bin/eslint --quiet 'src/**/*.ts' 'test/**/*.ts' --fix
+	node_modules/.bin/eslint --quiet 'src/**/*.ts' 'test/**/*.ts' --fix
 
-.PHONY: tsbuild
-tsbuild:
-	tsc
-
-.PHONY: watch
+.PHONY:watch
 watch:
-	tsc --watch
+	node_modules/.bin/tsc --watch
 
-testserver: build
-	ts-node test/testserver.ts
+.PHONY:start
+start: build
+
+.PHONY:clean
+clean:
+	rm -r dist
+
+dist/build: $(SOURCE_FILES)
+	node_modules/.bin/tsc
+	@# Creating a small file to keep track of the last build time
+	touch dist/build
