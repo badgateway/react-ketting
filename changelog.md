@@ -6,7 +6,7 @@ Changelog
 
 * `useResolveResource` is now exported.
 
-1.4.3 (2020-12-06)
+1.4.3 (2021-03-06)
 ------------------
 
 * Add `refreshOnStale` option to `useResource`.
