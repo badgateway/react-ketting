@@ -137,7 +137,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       } catch (err) {
         switch(err.httpCode) {
           case 400 :
-            if (err.oauth2Code !== 'invalid_grant') {
+            if (err.oauth2Code === 'invalid_grant') {
               console.info('Refresh token might already have been used, or invalid or expired. Lets re-authenticate');
             } else {
               console.error('[ketting] ', err);
