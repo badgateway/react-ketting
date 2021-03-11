@@ -2,6 +2,7 @@ import { Resource, State as ResourceState, HalState, isState, Links } from 'kett
 import { useState, useEffect } from 'react';
 import { ResourceLike } from '../util';
 import { useClient } from './use-client';
+import { Client } from 'ketting';
 
 type UseResourceResponse<T> = {
 
@@ -103,11 +104,11 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
   const [resourceLike, mode, initialData, refreshOnStale] = getUseResourceOptions(arg1);
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
-  const [resourceState, setResourceState] = useResourceState(resourceLike, initialData);
+  const client = useClient();
+  const [resourceState, setResourceState] = useResourceState(resourceLike, initialData, client);
   const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
   const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(mode);
-  const client = useClient();
 
   useEffect(() => {
 
@@ -282,13 +283,13 @@ function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|st
  * Internal helper hook to deal with setting up the resource state, and
  * populate the cache.
  */
-function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, initialData: undefined | T | ResourceState<T>): [ResourceState<T>|undefined, (rs: ResourceState<T>|undefined) => void] {
+function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, initialData: undefined | T | ResourceState<T>, client: Client): [ResourceState<T>|undefined, (rs: ResourceState<T>|undefined) => void] {
 
   let data: undefined| ResourceState<T> = undefined;
   if (initialData) {
-    data = isState(initialData) ? initialData : dataToState(initialData);
+    data = isState(initialData) ? initialData : dataToState(initialData, client);
   } else if (resource instanceof Resource) {
-    data = resource.client.cache.get(resource.uri) || undefined;
+    data = client.cache.get(resource.uri) || undefined;
   }
   const [resourceState, setResourceState] = useState<ResourceState<T>| undefined>(data);
   return [resourceState, setResourceState];
@@ -307,14 +308,14 @@ function isUseResourceOptions<T>(input: any | UseResourceOptions<T>): input is U
  * For now this will always return a HalState object, because it's a
  * reasonable default, but this may change in the future.
  */
-function dataToState<T>(data: T): ResourceState<T> {
+function dataToState<T>(data: T, client: Client): ResourceState<T> {
 
-  return new HalState(
-    'about:blank',
+  return new HalState({
+    uri: 'about:blank' + Math.random(),
+    client,
     data,
-    new Headers(),
-    new Links('about:blank'),
-    [],
-  );
+    headers: new Headers(),
+    links: new Links('about:blank'),
+  });
 
 }
