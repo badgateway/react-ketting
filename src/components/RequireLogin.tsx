@@ -135,12 +135,21 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
           return;
         }
       } catch (err) {
-        if (err.httpCode !== 401) {
-          console.error('[ketting] ', err);
-          throw new Error('Got error while accessing api: ' + err.httpCode);
-        } else {
-          console.info('[ketting] Stored credentials were not valid. Lets re-authenticate');
-          // Ignore 401 errors, we're gonna re-authenticate
+        switch(err.httpCode) {
+          case 400 :
+            if (err.oauth2Code === 'invalid_grant') {
+              console.info('Refresh token might already have been used, or invalid or expired. Lets re-authenticate');
+            } else {
+              console.error('[ketting] ', err);
+              throw new Error('Got error while accessing api: ' + err.httpCode);
+            }
+            break;
+          case 401 :
+            console.info('[ketting] Stored credentials were not valid. Lets re-authenticate');
+            break;
+          default :
+            console.error('[ketting] ', err);
+            throw new Error('Got error while accessing api: ' + err.httpCode);
         }
       }
     } else {
