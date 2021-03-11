@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.4.5 (2021-03-11)
+------------------
+
+* Correctly handle 'invalid_grant' errors from an OAuth2 server.
+
+
 1.4.4 (2021-03-09)
 ------------------
 
