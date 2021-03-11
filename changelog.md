@@ -7,7 +7,13 @@ Changelog
 * Compatibility with Ketting 7.
 
 
-1.4.3 (2021-12-06)
+1.4.4 (2021-03-09)
+------------------
+
+* `useResolveResource` is now exported.
+
+
+1.4.3 (2021-03-06)
 ------------------
 
 * Add `refreshOnStale` option to `useResource`.
