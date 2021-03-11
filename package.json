@@ -36,7 +36,7 @@
   ],
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "react": "^16.13.1",
+    "react": "^17",
     "ketting": "^7@beta"
   },
   "devDependencies": {
