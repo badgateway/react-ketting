@@ -1,10 +1,11 @@
 Changelog
 =========
 
-2.0.0 (????-??-??)
-------------------
+2.0.0-beta.0 (2021-03-14)
+-------------------------
 
 * Compatibility with Ketting 7.
+* `UseResourceOptions` is now exported
 
 
 1.4.5 (2021-03-11)
