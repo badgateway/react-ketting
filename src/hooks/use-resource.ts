@@ -30,7 +30,7 @@ type UseResourceResponse<T> = {
 
 }
 
-type UseResourceOptions<T> = {
+export type UseResourceOptions<T> = {
   mode: 'PUT',
   resource: ResourceLike<T>,
   initialState?: T | ResourceState<T>,
