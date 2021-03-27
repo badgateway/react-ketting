@@ -3,7 +3,6 @@
   "version": "2.0.0-beta.0",
   "description": "Ketting bindings for React",
   "main": "dist/index.js",
-  "browser": "browser/react-ketting.min.js",
   "scripts": {
     "test": "make test",
     "prepublishOnly": "make build",
