@@ -1,6 +1,13 @@
 Changelog
 =========
 
+1.4.6 (2021-03-27)
+------------------
+
+* #43: Remove incorrect 'browser' property from `package.json`. This should
+  never have been there and was causing issues for some build systems.
+
+
 1.4.5 (2021-03-11)
 ------------------
 
