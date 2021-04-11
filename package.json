@@ -35,8 +35,8 @@
   ],
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "react": "^17",
-    "ketting": "^7@beta"
+    "ketting": "^7",
+    "react": "^17"
   },
   "devDependencies": {
     "@types/chai": "^4.2.15",
@@ -47,7 +47,7 @@
     "@typescript-eslint/parser": "^4.17.0",
     "chai": "^4.3.4",
     "eslint": "^7.22.0",
-    "ketting": "^7.0.0-beta.5",
+    "ketting": "^7.0.0",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
     "react": "^17.0.2",
