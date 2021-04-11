@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.0.0 (2021-03-14)
+------------------
+
+* Stable release
+* No functional changes since 2.0.0-beta.0
+
+
 2.0.0-beta.0 (2021-03-14)
 -------------------------
 
