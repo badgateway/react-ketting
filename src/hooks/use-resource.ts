@@ -102,6 +102,7 @@ export function useResource<T>(resource: ResourceLike<T>|string): UseResourceRes
 export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
 export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
 
+  // Here be dragons
   const [resourceLike, mode, initialData, refreshOnStale] = getUseResourceOptions(arg1);
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
   const client = useClient();
@@ -250,7 +251,9 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 /**
  * A helper function to process the overloaded arguments of useResource, and return a consistent result
  */
-function getUseResourceOptions<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined, boolean] {
+function getUseResourceOptions<T>(
+  arg1: ResourceLike<T>|UseResourceOptions<T>|string
+): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined, boolean] {
 
   const client = useClient();
   let mode : 'POST' | 'PUT';
