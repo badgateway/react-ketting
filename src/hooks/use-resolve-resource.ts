@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 type UseResolveResourceResult<T> = {
   error: Error | null,
   resource: Resource<T> | null,
+  setResource: (resource: Resource<T>) => void,
 }
 
 /**
@@ -37,7 +38,8 @@ export function useResolveResource<T>(resourceLike: ResourceLike<T>|string): Use
 
   return {
     resource,
-    error
+    error,
+    setResource,
   };
 
 }

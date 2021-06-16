@@ -1,7 +1,7 @@
-import { Resource, State as ResourceState } from 'ketting';
+import { Resource } from 'ketting';
 import { useState, useEffect } from 'react';
 import { ResourceLike } from '../util';
-import { useResolveResource } from './use-resolve-resource';
+import { useReadResource } from './use-read-resource';
 
 /**
  * The result of a useCollection hook.
@@ -85,62 +85,25 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
 
   const rel = options?.rel || 'item';
 
-  const { resource, error: resolveError } = useResolveResource(resourceLike);
+  const { resourceState, loading, error } = useReadResource({
+    resource: resourceLike,
+    refreshOnStale: options?.refreshOnStale,
+    // This header will be included on the first, uncached fetch.
+    // This may be helpful to the server and instruct it to embed
+    // all collection members in that initial fetch.
+    initialGetRequestHeaders: {
+      Prefer: 'transclude=' + rel,
+    }
+  });
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null|Error>(null);
   const [items, setItems] = useState<Resource<T>[]>([]);
 
   useEffect( () => {
-    if (resolveError) {
-      setError(resolveError);
-      setLoading(false);
-      return;
-    }
-    if (!resource) {
-      // No resource yet, lets wait for it.
-      setLoading(true);
-      setItems([]);
-      return;
-    }
-    // Now we got a resource, let's find its children.
-    resource
-      .followAll(rel)
-      .preferTransclude()
-      .then( result => {
-        setItems(result);
-        setLoading(false);
-      })
-      .catch(err => {
-        setError(err);
-        setLoading(false);
-      });
 
-    const updateHandler = (newState: ResourceState) => {
-      const newItems = newState.links.getMany(rel)
-        .map(link => resource.go(link.href));
-      setItems(newItems);
-    };
+    if (!resourceState) return;
+    setItems(resourceState.followAll(rel));
 
-    const staleHandler = () => {
-      if (options?.refreshOnStale) {
-        resource
-          .refresh()
-          .catch(err => {
-            setError(err);
-          });
-      }
-    };
-
-    resource.on('update', updateHandler);
-    resource.on('stale', staleHandler);
-
-    return function cleanup() {
-      resource.off('update', updateHandler);
-      resource.off('stale', staleHandler);
-    };
-
-  }, [resource, resolveError]);
+  }, [resourceState]);
 
   return {
     loading,
