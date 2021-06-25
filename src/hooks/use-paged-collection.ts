@@ -66,11 +66,14 @@ type UsePagedCollectionResponse<T> = {
  *
  * Returned properties:
  *
- * * loading - will be true as long as the result is still being fetched from
- *             the server.
+ * * loading - will be true every time we're going to the server and fetch a
+ *             a new page.
  * * error - Will be null or an error object.
  * * items - Will contain an array of resources, each typed Resource<T> where
  *           T is the passed generic argument.
+ * * hasNextPage - Will be true if the server has another page.
+ * * loadNextPage - Loads the next page, and appends the new items to the
+ *                  items array.
  */
 export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UsePagedCollectionResponse<T> {
 
