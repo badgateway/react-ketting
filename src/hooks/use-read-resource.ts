@@ -18,8 +18,21 @@ type UseReadResourceResponse<T> = {
    */
   resourceState: ResourceState<T>;
 
-  // The 'real' resource.
+  /**
+   * The 'real' resource.
+   *
+   * This will be `null` until we have it. It's not typed null because it
+   * makes it very clumsy to work with the hook.
+   */
   resource: Resource<T>;
+
+  /**
+   * Change the resource that the hook uses.
+   *
+   * A reason you might want to do this is if the resource itself changed
+   * uris.
+   */
+  setResource(resource: Resource<T>): void;
 
 }
 
@@ -65,7 +78,7 @@ export type UseReadResourceOptions<T> = {
  */
 export function useReadResource<T>(options: UseReadResourceOptions<T>): UseReadResourceResponse<T> {
 
-  const { resource } = useResolveResource(options.resource);
+  const { resource, setResource } = useResolveResource(options.resource);
 
   const initialState = options.initialState;
   const refreshOnStale = options.refreshOnStale || false;
@@ -144,12 +157,12 @@ export function useReadResource<T>(options: UseReadResourceOptions<T>): UseReadR
 
   }, [resource]);
 
-  const result = {
+  const result: UseReadResourceResponse<T> = {
     loading,
     error,
     resourceState: resourceState as ResourceState<T>,
     resource: resource as Resource<T>,
-    data: (resourceState?.data) as T,
+    setResource,
   };
 
   return result;

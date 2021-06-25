@@ -1,5 +1,6 @@
 export { useClient } from './hooks/use-client';
 export { useCollection } from './hooks/use-collection';
+export { usePagedCollection } from './hooks/use-paged-collection';
 export { useReadResource } from './hooks/use-read-resource';
 export { useResolveResource } from './hooks/use-resolve-resource';
 export { useResource, UseResourceOptions } from './hooks/use-resource';
