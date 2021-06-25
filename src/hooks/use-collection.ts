@@ -30,7 +30,7 @@ type UseCollectionResponse<T> = {
 /**
  * Options that may be given to useCollection
  */
-type UseCollectionOptions = {
+export type UseCollectionOptions = {
 
   /**
    * By default useCollection will follow the 'item' relation type to find
