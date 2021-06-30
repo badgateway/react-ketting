@@ -1,6 +1,14 @@
 Changelog
 =========
 
+2.1.0 (2021-06-29)
+------------------
+
+* Added `usePagedCollection`, which allows users to create 'infinite scroll'
+  interfaces.
+* Some heavy duty refactoring to encourage better re-use of internal hooks.
+
+
 2.0.0 (2021-03-14)
 ------------------
 
