@@ -1,6 +1,6 @@
 {
   "name": "react-ketting",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Ketting bindings for React",
   "main": "dist/index.js",
   "scripts": {
@@ -48,10 +48,10 @@
     "chai": "^4.3.4",
     "eslint": "^7.22.0",
     "ketting": "^7.0.0",
-    "mocha": "^8.3.2",
+    "mocha": "^9.0.1",
     "nyc": "^15.1.0",
     "react": "^17.0.2",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.0.0",
     "typescript": "^4.2.3"
   },
   "nyc": {
