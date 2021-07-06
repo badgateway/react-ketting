@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.2 (2021-07-06)
+------------------
+
+* In `usePagedCollection`, when the resource property changes, the first pag
+  was not reloaded, resulting in an empty collection.
+
+
 2.1.1 (2021-06-29)
 ------------------
 
