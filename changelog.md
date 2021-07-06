@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.1 (2021-06-29)
+------------------
+
+* If `usePagedCollection` was given a promise, it would go in an infinite
+  render loop.
+
+
 2.1.0 (2021-06-29)
 ------------------
 

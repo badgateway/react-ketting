@@ -80,15 +80,11 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
   const rel = options?.rel || 'item';
 
   const [items, setItems] = useState<Resource<T>[]>([]);
-  useEffect(() => {
 
-    // If 'resourceLike' changes, it means that we're starting with a new
-    // collection.
-    setItems([]);
+  const [currentCollectionResource, setCurrentCollectionResource] = useState<ResourceLike<any>>(resourceLike);
 
-  },[resourceLike]);
-
-  const { resourceState, loading, error, setResource } = useReadResource({
+  // This is the 'base collection'
+  const bc = useReadResource({
     resource: resourceLike,
     refreshOnStale: options?.refreshOnStale,
     // This header will be included on the first, uncached fetch.
@@ -99,32 +95,54 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
     }
   });
 
-  useEffect( () => {
+  // This is the 'current collection
+  const cc = useReadResource({
+    resource: currentCollectionResource,
+    refreshOnStale: options?.refreshOnStale,
+    // This header will be included on the first, uncached fetch.
+    // This may be helpful to the server and instruct it to embed
+    // all collection members in that initial fetch.
+    initialGetRequestHeaders: {
+      Prefer: 'transclude=' + rel,
+    }
+  });
 
-    if (!resourceState) return;
-    setItems([
-      ...items,
-      ...resourceState.followAll(rel)
-    ]);
+  useEffect(() => {
 
-  }, [resourceState]);
+    if (bc.loading) {
+      // We're loading a new 'base collection', so lets clear any items we got
+      setItems([]);
+    }
 
+  }, [bc.loading]);
+
+  useEffect(() => {
+
+    if (!cc.loading) {
+      setItems([
+        ...items,
+        ...cc.resourceState.followAll(rel)
+      ]);
+    }
+
+  }, [cc.loading]);
 
   const hasNextPage =
-    resourceState && resourceState.links.has('next');
+    !cc.loading && cc.resourceState && cc.resourceState.links.has('next');
 
   const loadNextPage = () => {
 
     if (!hasNextPage) {
       console.warn('loadNextPage was called, but there was no next page');
+      return;
     }
-    setResource(resourceState.follow('next'));
+    setCurrentCollectionResource(cc.resourceState.follow('next'));
 
   }
 
   return {
-    loading,
-    error,
+    loading: cc.loading,
+    error: cc.error,
     items,
     hasNextPage,
     loadNextPage,
