@@ -131,31 +131,6 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
   }, [cc.resourceState?.uri]);
 
 
-  /*
-  useEffect(() => {
-
-    if (bc.loading) {
-      // We're loading a new 'base collection', so lets clear any items we got
-      setItems([]);
-
-      // Set the 'current' page back to the first page in the collection.
-      setCurrentCollectionResource(resourceLike);
-    }
-
-  }, [bc.resource]);
-
-  useEffect(() => {
-
-    if (!cc.loading) {
-      setItems([
-        ...items,
-        ...cc.resourceState.followAll(rel)
-      ]);
-    }
-
-  }, [cc.loading]);
-  */
-
   const hasNextPage =
     !cc.loading && cc.resourceState && cc.resourceState.links.has('next');
 
