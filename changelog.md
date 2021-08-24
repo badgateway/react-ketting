@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.3 (2021-08-24)
+------------------
+
+* `usePagedCollection` did not behave correctly with pages or collections
+  that were already cached. Now it doesn't care if the page was cached or not.
+
+
 2.1.2 (2021-07-06)
 ------------------
 
