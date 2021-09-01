@@ -6,6 +6,7 @@ Changelog
 
 * In some scenarios `RequireLogin` could crash due to a function sometimes
   being called before it's defined (@mihok).
+* Works with Typescript 4.4 strict.
 
 
 2.1.3 (2021-08-24)
