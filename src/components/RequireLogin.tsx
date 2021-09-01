@@ -67,17 +67,6 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
   const [isAuthenticated, setAuthenticated] = useState(false);
   const client = useClient();
-
-  useEffect(() => {
-    validateToken().catch(err => {
-      console.error('[ketting] Error while validating token', err);
-    });
-  }, [client]);
-
-  if (isAuthenticated) {
-    return <>{props.children}</>;
-  }
-
   const validateToken = async () => {
 
     const location = new URL(document.location.href);
@@ -159,6 +148,16 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     // IF we got here it means we didn't have tokens in LocalStorage, or they
     // were expired.
     document.location.href = getAuthorizeUri(props);
+  }
+
+  useEffect(() => {
+    validateToken().catch(err => {
+      console.error('[ketting] Error while validating token', err);
+    });
+  }, [client]);
+
+  if (isAuthenticated) {
+    return <>{props.children}</>;
   }
 
   /**
