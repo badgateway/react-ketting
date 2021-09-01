@@ -123,7 +123,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
           // End function
           return;
         }
-      } catch (err) {
+      } catch (err: any) {
         switch(err.httpCode) {
           case 400 :
             if (err.oauth2Code === 'invalid_grant') {
