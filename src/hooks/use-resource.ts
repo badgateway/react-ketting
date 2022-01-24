@@ -96,18 +96,18 @@ export type UseResourceOptions<T> = {
  * To do POST requests you must specifiy initialState with the state the user starts
  * off with.
  */
-export function useResource<T>(resourceLike: ResourceLike<T>|string, options: UseResourceOptions<T>): UseResourceResponse<T> {
+export function useResource<T>(resourceLike: ResourceLike<T>|string, options?: UseResourceOptions<T>): UseResourceResponse<T> {
 
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
   const client = useClient();
   const [resourceState, setResourceState] = useResourceState(
     typeof resourceLike === 'string' ? client.go(resourceLike) : resourceLike,
-    options.initialState ?? undefined,
+    options?.initialState ?? undefined,
     client,
   );
   const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
-  const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(options.mode ?? 'PUT');
+  const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(options?.mode ?? 'PUT');
 
   useEffect(() => {
 
@@ -140,7 +140,7 @@ export function useResource<T>(resourceLike: ResourceLike<T>|string, options: Us
     };
 
     const onStale = () => {
-      if (options.refreshOnStale ?? false) {
+      if (options?.refreshOnStale ?? false) {
         resource
           .refresh()
           .catch(err => {
