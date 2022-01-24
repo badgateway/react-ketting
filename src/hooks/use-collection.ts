@@ -85,8 +85,8 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
 
   const rel = options?.rel || 'item';
 
-  const { resourceState, loading, error } = useReadResource({
-    resource: resourceLike,
+  const { resourceState, loading, error } = useReadResource(resourceLike,
+    {
     refreshOnStale: options?.refreshOnStale,
     // This header will be included on the first, uncached fetch.
     // This may be helpful to the server and instruct it to embed

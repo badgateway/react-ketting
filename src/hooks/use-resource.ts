@@ -32,12 +32,10 @@ type UseResourceResponse<T> = {
 
 export type UseResourceOptions<T> = {
   mode: 'PUT',
-  resource: ResourceLike<T>,
   initialState?: T | ResourceState<T>,
   refreshOnStale?: boolean,
 } | {
   mode: 'POST',
-  resource: ResourceLike<T>,
   initialState: T | ResourceState<T>,
   refreshOnStale?: boolean,
 }
@@ -98,18 +96,18 @@ export type UseResourceOptions<T> = {
  * To do POST requests you must specifiy initialState with the state the user starts
  * off with.
  */
-export function useResource<T>(resource: ResourceLike<T>|string): UseResourceResponse<T>;
-export function useResource<T>(options: UseResourceOptions<T>): UseResourceResponse<T>;
-export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|string): UseResourceResponse<T> {
+export function useResource<T>(resourceLike: ResourceLike<T>|string, options: UseResourceOptions<T>): UseResourceResponse<T> {
 
-  // Here be dragons
-  const [resourceLike, mode, initialData, refreshOnStale] = getUseResourceOptions(arg1);
   const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
   const client = useClient();
-  const [resourceState, setResourceState] = useResourceState(resourceLike, initialData, client);
+  const [resourceState, setResourceState] = useResourceState(
+    typeof resourceLike === 'string' ? client.go(resourceLike) : resourceLike,
+    options.initialState ?? undefined,
+    client,
+  );
   const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
-  const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(mode);
+  const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(options.mode ?? 'PUT');
 
   useEffect(() => {
 
@@ -132,7 +130,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
   useEffect(() => {
 
     // This effect is for setting up the onUpdate event
-    if (!resource || mode === 'POST') {
+    if (!resource || modeVal === 'POST') {
       return;
     }
 
@@ -142,7 +140,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
     };
 
     const onStale = () => {
-      if (refreshOnStale) {
+      if (options.refreshOnStale ?? false) {
         resource
           .refresh()
           .catch(err => {
@@ -249,40 +247,6 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 }
 
 /**
- * A helper function to process the overloaded arguments of useResource, and return a consistent result
- */
-function getUseResourceOptions<T>(
-  arg1: ResourceLike<T>|UseResourceOptions<T>|string
-): [Resource<T> | PromiseLike<Resource<T>>, 'POST' | 'PUT', T | ResourceState<T> | undefined, boolean] {
-
-  const client = useClient();
-  let mode : 'POST' | 'PUT';
-  let initialState;
-  let res;
-  let refreshOnStale;
-
-  if (isUseResourceOptions(arg1)) {
-    mode = arg1.mode;
-    initialState = arg1.initialState;
-    res = arg1.resource;
-    refreshOnStale = arg1.refreshOnStale ?? false;
-  } else {
-    mode = 'PUT';
-    initialState = undefined;
-    res = arg1;
-    refreshOnStale = false;
-  }
-
-  return [
-    typeof res === 'string' ? client.go(res) : res,
-    mode,
-    initialState,
-    refreshOnStale,
-  ];
-
-}
-
-/**
  * Internal helper hook to deal with setting up the resource state, and
  * populate the cache.
  */
@@ -296,12 +260,6 @@ function useResourceState<T>(resource: Resource<T> | PromiseLike<Resource<T>>, i
   }
   const [resourceState, setResourceState] = useState<ResourceState<T>| undefined>(data);
   return [resourceState, setResourceState];
-
-}
-
-function isUseResourceOptions<T>(input: any | UseResourceOptions<T>): input is UseResourceOptions<T> {
-
-  return input.mode === 'PUT' || input.mode === 'POST';
 
 }
 

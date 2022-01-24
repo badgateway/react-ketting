@@ -37,7 +37,6 @@ type UseReadResourceResponse<T> = {
 }
 
 export type UseReadResourceOptions<T> = {
-  resource: ResourceLike<T>,
   initialState?: ResourceState<T>,
   refreshOnStale?: boolean,
 
@@ -76,9 +75,9 @@ export type UseReadResourceOptions<T> = {
  * * resourceState - A state object. The `.data` property of this object will
  *                   contain the parsed JSON from the server.
  */
-export function useReadResource<T>(options: UseReadResourceOptions<T>): UseReadResourceResponse<T> {
+export function useReadResource<T>(resourceLike: ResourceLike<T>, options: UseReadResourceOptions<T>): UseReadResourceResponse<T> {
 
-  const { resource, setResource } = useResolveResource(options.resource);
+  const { resource, setResource } = useResolveResource(resourceLike);
 
   const initialState = options.initialState;
   const refreshOnStale = options.refreshOnStale || false;
