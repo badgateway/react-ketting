@@ -84,8 +84,7 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
   const [currentCollectionResource, setCurrentCollectionResource] = useState<ResourceLike<any>>(resourceLike);
 
   // This is the 'base collection'
-  const bc = useReadResource({
-    resource: resourceLike,
+  const bc = useReadResource(resourceLike, {
     refreshOnStale: options?.refreshOnStale,
     // This header will be included on the first, uncached fetch.
     // This may be helpful to the server and instruct it to embed
@@ -96,8 +95,7 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
   });
 
   // This is the 'current collection
-  const cc = useReadResource({
-    resource: currentCollectionResource,
+  const cc = useReadResource(currentCollectionResource, {
     refreshOnStale: options?.refreshOnStale,
     // This header will be included on the first, uncached fetch.
     // This may be helpful to the server and instruct it to embed
