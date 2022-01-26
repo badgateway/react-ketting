@@ -1,5 +1,5 @@
 import { Resource } from 'ketting';
-import { useState, useEffect } from 'react';
+import { useRef } from 'react';
 import { ResourceLike } from '../util';
 import { useReadResource } from './use-read-resource';
 
@@ -96,19 +96,15 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
     }
   });
 
-  const [items, setItems] = useState<Resource<T>[]>([]);
-
-  useEffect( () => {
-
-    if (!resourceState) return;
-    setItems(resourceState.followAll(rel));
-
-  }, [resourceState]);
+  const items = useRef<Resource<T>[]>([]);
+  if (resourceState) {
+    items.current = resourceState.followAll(rel);
+  }
 
   return {
     loading,
     error,
-    items,
+    items: items.current,
   };
 
 }
