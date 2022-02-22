@@ -1,7 +1,15 @@
 Changelog
 =========
 
-2.1.4 (2012-09-01)
+2.1.5 (2022-02-21)
+------------------
+
+* In some cases when a React component passes a new resource as a string to
+  useResource, the useResource might return "undefined" for the resource,
+  which can result in a white screen of death.
+
+
+2.1.4 (2021-09-01)
 ------------------
 
 * In some scenarios `RequireLogin` could crash due to a function sometimes
