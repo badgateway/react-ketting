@@ -7,7 +7,8 @@ Changelog
 * In some cases when a React component passes a new resource as a string to
   useResource, the useResource might return "undefined" for the resource,
   which can result in a white screen of death.
-
+  This one was a bit of a doozy, check the PR for more information:
+  https://github.com/badgateway/react-ketting/pull/67
 
 2.1.4 (2021-09-01)
 ------------------
