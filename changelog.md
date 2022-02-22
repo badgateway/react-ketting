@@ -1,14 +1,20 @@
 Changelog
 =========
 
-2.1.5 (2022-02-21)
+3.0.0 (2022-02-21)
 ------------------
 
+* BC Break: The signature of `useResource` has changed, but only if you were
+  passing options. If you called `useResource(options)` before, it must now
+  be structured as `useResource(resource, options)` to be consistent with
+  every other hook.
 * In some cases when a React component passes a new resource as a string to
   useResource, the useResource might return "undefined" for the resource,
   which can result in a white screen of death.
   This one was a bit of a doozy, check the PR for more information:
   https://github.com/badgateway/react-ketting/pull/67
+* Remove an unneeded initial render in `useCollection`.
+
 
 2.1.4 (2021-09-01)
 ------------------
