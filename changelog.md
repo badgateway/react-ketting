@@ -1,7 +1,7 @@
 Changelog
 =========
 
-3.0.0 (2022-??-??)
+3.0.0 (2022-02-21)
 ------------------
 
 * BC Break: The signature of `useResource` has changed, but only if you were
