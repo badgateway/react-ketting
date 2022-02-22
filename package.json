@@ -46,6 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "chai": "^4.3.4",
+    "chokidar": "^3.5.3",
     "eslint": "^8.9.0",
     "ketting": "^7.2.0",
     "mocha": "^9.0.1",
