@@ -85,20 +85,20 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
 
   if (resourceLike===undefined) {
     console.warn('useCollection was called with "undefined" as the "resourceLike" argument. This is a bug. Did you forget to wait for \'loading\' to complete somewhere?');
-  } 
+  }
 
   const rel = options?.rel || 'item';
 
   const { resourceState, loading, error } = useReadResource(resourceLike,
     {
-    refreshOnStale: options?.refreshOnStale,
-    // This header will be included on the first, uncached fetch.
-    // This may be helpful to the server and instruct it to embed
-    // all collection members in that initial fetch.
-    initialGetRequestHeaders: {
-      Prefer: 'transclude=' + rel,
-    }
-  });
+      refreshOnStale: options?.refreshOnStale,
+      // This header will be included on the first, uncached fetch.
+      // This may be helpful to the server and instruct it to embed
+      // all collection members in that initial fetch.
+      initialGetRequestHeaders: {
+        Prefer: 'transclude=' + rel,
+      }
+    });
 
   const items = useRef<Resource<T>[]>([]);
   if (resourceState) {

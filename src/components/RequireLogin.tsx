@@ -54,7 +54,7 @@ type Props = {
    *
    * If it's set to "null", this test is skipped.
    */
-  testEndpoint?: string
+  testEndpoint?: string;
 
 }
 
@@ -148,7 +148,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
     // IF we got here it means we didn't have tokens in LocalStorage, or they
     // were expired.
     document.location.href = getAuthorizeUri(props);
-  }
+  };
 
   useEffect(() => {
     validateToken().catch(err => {
@@ -191,7 +191,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
 
     setAuthenticated(true);
     props.onSuccess(state);
-  }
+  };
 
   const storeKettingCredentialsInLocalStorage = async (token: OAuth2Token) => {
     // Store credentials.
@@ -200,7 +200,7 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
       LOCALSTORAGEKEY,
       JSON.stringify(token)
     );
-  }
+  };
   // We return a generic "Authenticating" component while the useEffect is...in effect
   // A custom "authenticating" component can also be passed in instead
   return (
@@ -211,19 +211,19 @@ const RequireLogin: React.FC<Props> = (props: Props) => {
         (
           <div className='authenticating'>
             <header><h1>Authenticating</h1></header>
-        </div>
+          </div>
         )
       }
     </>
   );
-}
+};
 
 
 /**
  * Generates the full URL to redirect the user to for the OAuth2 authorization
  * endpoint.
  */
-function getAuthorizeUri(props: { clientId: string, authorizeEndpoint: string }): string {
+function getAuthorizeUri(props: { clientId: string; authorizeEndpoint: string }): string {
   const currentRoot = document.location.origin + '/';
   const currentPath = document.location.pathname;
 

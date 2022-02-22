@@ -6,14 +6,14 @@ import * as React from 'react';
  * will pass to the wrapped component
  */
 type PassedProps<T> = {
-  resource: Resource<T>,
-  resourceState: State<T> | null,
-  data: T | null,
+  resource: Resource<T>;
+  resourceState: State<T> | null;
+  data: T | null;
 }
 
 type HocState<T> = {
-  resourceState: State<T> | null,
-  data: T | null,
+  resourceState: State<T> | null;
+  data: T | null;
 }
 
 /**
@@ -31,7 +31,7 @@ type HocState<T> = {
  */
 export function withResource<TProps extends { resource: Resource<TResourceBody> }, TResourceBody>(
   WrappedComponent: React.ComponentType<TProps & PassedProps<TResourceBody>>
-  ): React.ComponentType<TProps> {
+): React.ComponentType<TProps> {
 
   return class extends React.Component<TProps, HocState<TResourceBody>> {
 
@@ -50,7 +50,7 @@ export function withResource<TProps extends { resource: Resource<TResourceBody> 
         resourceState,
         data: resourceState.data
       });
-      this.props.resource.on('update', this.onStateUpdateEvent); 
+      this.props.resource.on('update', this.onStateUpdateEvent);
     }
 
     componentWillUnmount() {
@@ -72,6 +72,6 @@ export function withResource<TProps extends { resource: Resource<TResourceBody> 
       return <WrappedComponent resourceState={this.state.resourceState} data={this.state.data} {...this.props} />;
     }
 
-  }
+  };
 
 }

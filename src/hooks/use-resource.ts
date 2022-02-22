@@ -32,13 +32,13 @@ type UseResourceResponse<T> = {
 }
 
 export type UseResourceOptions<T> = {
-  mode: 'PUT',
-  initialState?: T | ResourceState<T>,
-  refreshOnStale?: boolean,
+  mode: 'PUT';
+  initialState?: T | ResourceState<T>;
+  refreshOnStale?: boolean;
 } | {
-  mode: 'POST',
-  initialState: T | ResourceState<T>,
-  refreshOnStale?: boolean,
+  mode: 'POST';
+  initialState: T | ResourceState<T>;
+  refreshOnStale?: boolean;
 }
 
 /**
