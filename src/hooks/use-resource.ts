@@ -2,6 +2,7 @@ import { Resource, State as ResourceState, HalState, isState, Links } from 'kett
 import { useState, useEffect } from 'react';
 import { ResourceLike } from '../util';
 import { useClient } from './use-client';
+import { useResolveResource } from './use-resolve-resource';
 import { Client } from 'ketting';
 
 type UseResourceResponse<T> = {
@@ -98,7 +99,7 @@ export type UseResourceOptions<T> = {
  */
 export function useResource<T>(resourceLike: ResourceLike<T>|string, options?: UseResourceOptions<T>): UseResourceResponse<T> {
 
-  const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
+  const { resource, setResource, error: resolveError } = useResolveResource(resourceLike);
   const client = useClient();
   const [resourceState, setResourceState] = useResourceState(
     typeof resourceLike === 'string' ? client.go(resourceLike) : resourceLike,
@@ -108,24 +109,6 @@ export function useResource<T>(resourceLike: ResourceLike<T>|string, options?: U
   const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
   const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(options?.mode ?? 'PUT');
-
-  useEffect(() => {
-
-    // This effect is for finding the real Resource object
-    if (resourceLike instanceof Resource) {
-      setResource(resourceLike);
-    } else if (typeof resourceLike === 'string') {
-      setResource(client.go(resourceLike));
-    } else {
-      Promise.resolve(resourceLike).then( newRes => {
-        setResource(newRes);
-      }).catch(err => {
-        setError(err);
-        setLoading(false);
-      });
-    }
-
-  }, [resourceLike]);
 
   useEffect(() => {
 
@@ -201,7 +184,7 @@ export function useResource<T>(resourceLike: ResourceLike<T>|string, options?: U
 
   const result = {
     loading,
-    error,
+    error: error ?? resolveError,
     resourceState: resourceState as ResourceState<T>,
     setResourceState: (newState: ResourceState<T>) => {
       if (!resource) {
