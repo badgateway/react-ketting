@@ -83,6 +83,10 @@ export type UseCollectionOptions = {
  */
 export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UseCollectionResponse<T> {
 
+  if (resourceLike===undefined) {
+    console.warn('useCollection was called with "undefined" as the "resourceLike" argument. This is a bug. Did you forget to wait for \'loading\' to complete somewhere?');
+  } 
+
   const rel = options?.rel || 'item';
 
   const { resourceState, loading, error } = useReadResource({
