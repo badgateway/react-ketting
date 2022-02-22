@@ -2,6 +2,7 @@ import { Resource, State as ResourceState, HalState, isState, Links } from 'kett
 import { useState, useEffect } from 'react';
 import { ResourceLike } from '../util';
 import { useClient } from './use-client';
+import { useResolveResource } from './use-resolve-resource';
 import { Client } from 'ketting';
 
 type UseResourceResponse<T> = {
@@ -104,30 +105,12 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
   // Here be dragons
   const [resourceLike, mode, initialData, refreshOnStale] = getUseResourceOptions(arg1);
-  const [resource, setResource] = useState<Resource<T> | undefined>(resourceLike instanceof Resource ? resourceLike : undefined);
+  const { resource, setResource, error: resolveError } = useResolveResource(resourceLike);
   const client = useClient();
   const [resourceState, setResourceState] = useResourceState(resourceLike, initialData, client);
   const [loading, setLoading] = useState(resourceState === undefined);
   const [error, setError] = useState<null|Error>(null);
   const [modeVal, setModeVal] = useState<'POST' | 'PUT'>(mode);
-
-  useEffect(() => {
-
-    // This effect is for finding the real Resource object
-    if (resourceLike instanceof Resource) {
-      setResource(resourceLike);
-    } else if (typeof resourceLike === 'string') {
-      setResource(client.go(resourceLike));
-    } else {
-      Promise.resolve(resourceLike).then( newRes => {
-        setResource(newRes);
-      }).catch(err => {
-        setError(err);
-        setLoading(false);
-      });
-    }
-
-  }, [resourceLike]);
 
   useEffect(() => {
 
@@ -203,7 +186,7 @@ export function useResource<T>(arg1: ResourceLike<T>|UseResourceOptions<T>|strin
 
   const result = {
     loading,
-    error,
+    error: error ?? resolveError,
     resourceState: resourceState as ResourceState<T>,
     setResourceState: (newState: ResourceState<T>) => {
       if (!resource) {
