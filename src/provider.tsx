@@ -2,18 +2,18 @@ import * as React from 'react';
 import { Client } from 'ketting';
 
 type Props = {
-  client: Client
+  client: Client;
   children: React.ReactNode | React.ReactNode[] | null;
 };
 
 export type KettingContext = {
-  client?: Client,
+  client?: Client;
 };
 
 const KettingContext = React.createContext<KettingContext>({});
 
 export function getKettingContext(): React.Context<KettingContext> {
-  
+
   return KettingContext;
 
 }
@@ -27,6 +27,6 @@ export const KettingProvider: React.FC<Props> = ({client, children}) => {
   };
   return <Context.Provider value={contextValue}>
     {children}
-  </Context.Provider>; 
+  </Context.Provider>;
 
-}
+};

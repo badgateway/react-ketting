@@ -140,7 +140,7 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
     }
     setCurrentCollectionResource(cc.resourceState.follow('next'));
 
-  }
+  };
 
   return {
     loading: cc.loading,

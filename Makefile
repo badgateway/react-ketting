@@ -8,22 +8,22 @@ build: dist/build
 
 .PHONY:test
 test:
-	node_modules/.bin/nyc node_modules/.bin/mocha
+	npx nyc node_modules/.bin/mocha
 
 .PHONY:lint
 lint:
-	node_modules/.bin/eslint --quiet 'src/*.ts' 'test/*.ts'
+	npx eslint --quiet 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}'
 
 .PHONY:lint-fix
 lint-fix: fix
 
 .PHONY:fix
 fix:
-	node_modules/.bin/eslint --quiet 'src/**/*.ts' 'test/**/*.ts' --fix
+	npx eslint --quiet 'src/**/*.{ts,tsx}' 'test/**/*.{ts,tsx}' --fix
 
 .PHONY:watch
 watch:
-	node_modules/.bin/tsc --watch
+	npx tsc --watch
 
 .PHONY:start
 start: build
@@ -33,6 +33,6 @@ clean:
 	rm -r dist
 
 dist/build: $(SOURCE_FILES)
-	node_modules/.bin/tsc
+	npx tsc
 	@# Creating a small file to keep track of the last build time
 	touch dist/build

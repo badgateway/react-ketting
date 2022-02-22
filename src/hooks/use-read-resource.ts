@@ -37,8 +37,8 @@ type UseReadResourceResponse<T> = {
 }
 
 export type UseReadResourceOptions<T> = {
-  initialState?: ResourceState<T>,
-  refreshOnStale?: boolean,
+  initialState?: ResourceState<T>;
+  refreshOnStale?: boolean;
 
   /**
    * HTTP headers to include if there was no existing cache, and the initial
@@ -180,7 +180,7 @@ function useResourceState<T>(
 
   let data: undefined| ResourceState<T> = undefined;
   if (initialData) {
-    data = initialData
+    data = initialData;
   } else if (resource instanceof Resource) {
     data = client.cache.get(resource.uri) || undefined;
   }
