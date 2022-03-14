@@ -1,4 +1,4 @@
-import { Resource } from 'ketting';
+import { Resource, State } from 'ketting';
 import { useRef } from 'react';
 import { ResourceLike } from '../util';
 import { useReadResource } from './use-read-resource';
@@ -24,6 +24,19 @@ type UseCollectionResponse<T> = {
    * This starts off as an empty array.
    */
   items: Resource<T>[];
+
+  /**
+   * A reference to the collection resource
+   */
+  resource: Resource<T>;
+
+  /**
+   * Reference to the Resource State. Some collections might emit some
+   * data on their own, such as the total number of items.
+   *
+   * This gives you access to that underlying data.
+   */
+  resourceState: State<T>;
 
 }
 
@@ -89,7 +102,7 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
 
   const rel = options?.rel || 'item';
 
-  const { resourceState, loading, error } = useReadResource(resourceLike,
+  const { resource, resourceState, loading, error } = useReadResource(resourceLike,
     {
       refreshOnStale: options?.refreshOnStale,
       // This header will be included on the first, uncached fetch.
@@ -109,6 +122,8 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
     loading,
     error,
     items: items.current,
+    resource,
+    resourceState,
   };
 
 }
