@@ -82,7 +82,7 @@ export function useResource<T = any>(resourceLike: ResourceLike<any>, options?: 
       throw new Error('Too early to call setResourceState, we don\'t have a current state to update');
     }
     resource.updateCache(newState);
-  }
+  };
   const submit = async () => {
     if (!resourceState || !resource) {
       throw new Error('Too early to call submit()');
@@ -96,7 +96,7 @@ export function useResource<T = any>(resourceLike: ResourceLike<any>, options?: 
     }
     resourceState.data = newData;
     setResourceState(resourceState);
-  }
+  };
 
   return {
     loading,
