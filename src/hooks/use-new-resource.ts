@@ -1,6 +1,6 @@
 import { Resource, State as ResourceState } from 'ketting';
 import { ResourceLike } from '../util';
-import { useResourceSimple } from './use-resource-simple';
+import { useResource } from './use-resource';
 
 type UseNewResourceResponse<T> = {
 
@@ -95,7 +95,7 @@ export type UseNewResourceOptions<T> = {
  */
 export function useNewResource<T>(resourceLike: ResourceLike<T>|string, options?: UseNewResourceOptions<T>): UseNewResourceResponse<T> {
 
-  return useResourceSimple(
+  return useResource(
     resourceLike,
     options
   );
