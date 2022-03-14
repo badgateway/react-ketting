@@ -23,13 +23,13 @@ export type UseNewResourceOptions<T> = {
  *
  * This hook is for a specific use-case in React application; use this hook
  * if you want to present the user a form to create the resource, and after
- * creation the user *stays* on that form and continues editing after
+ * creation the user *stays* on that form and continuet as editing after
  * creation.
  *
  * If you're just looking for a way to do a POST request and redirect/refresh
  * the interface, don't use this hook. Instead, you probably just want to call
  * `someResource.postFollow()` in an event handler and do something specific
- * to your needs.
+ * after it was successful.
  *
  * A general guideline of when this component is useful is if 'creating'
  * and 'editing' is continuous and not really discernable from a UX
