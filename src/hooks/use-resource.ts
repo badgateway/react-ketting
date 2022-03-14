@@ -5,7 +5,7 @@ import { useReadResource } from './use-read-resource';
 /**
  * The result of a useResource hook.
  */
-type UseResourceResponse<T> = {
+export type UseResourceResponse<T> = {
 
   // True if there is no data yet
   loading: boolean;
