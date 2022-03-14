@@ -21,9 +21,9 @@ export type UseNewResourceOptions<T> = {
  * useNewResource is a hook that helps you create new resources on a typical
  * REST api.
  *
- * This hook is for a specific use-case in React application. Use this hook
+ * This hook is for a specific use-case in React application; use this hook
  * if you want to present the user a form to create the resource, and after
- * creation the user *stays* on that form and continuous editing after
+ * creation the user *stays* on that form and continues editing after
  * creation.
  *
  * If you're just looking for a way to do a POST request and redirect/refresh
