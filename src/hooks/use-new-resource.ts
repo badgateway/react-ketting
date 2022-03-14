@@ -18,8 +18,32 @@ export type UseNewResourceOptions<T> = {
 
 
 /**
- * The useResource hook allows you to GET and PUT the state of
- * a resource.
+ * useNewResource is a hook that helps you create new resources on a typical
+ * REST api.
+ *
+ * This hook is for a specific use-case in React application. Use this hook
+ * if you want to present the user a form to create the resource, and after
+ * creation the user *stays* on that form and continuous editing after
+ * creation.
+ *
+ * If you're just looking for a way to do a POST request and redirect/refresh
+ * the interface, don't use this hook. Instead, you probably just want to call
+ * `someResource.postFollow()` in an event handler and do something specific
+ * to your needs.
+ *
+ * A general guideline of when this component is useful is if 'creating'
+ * and 'editing' is continuous and not really discernable from a UX
+ * perspective.
+ *
+ * The assumptions this hooks makes:
+ *
+ * 1. You create new resources with POST requests.
+ * 2. The body of the POST request is the same (or similar enough) to the
+ *    body of the resource you're eventually creating.
+ * 3. The server returns a 201 Created status code when successful.
+ * 4. The server also returns a Location header referring to the new resource.
+ * 5. After creation, any changes the user makes result in a `PUT` request to
+ *    the new location.
  *
  * Example call:
  *
@@ -29,8 +53,16 @@ export type UseNewResourceOptions<T> = {
  *     resourceState,
  *     setResourceState,
  *     submit
- *  } = useResource(resource);
+ *  } = useNewResource(targetResource, { initialData: { foo: bar });
  * </pre>
+ *
+ * You must pass some 'initial data' to this function that's used to
+ * initialize the data object. Think of this as the 'template' or starting
+ * value.
+ *
+ * Instead of 'initialData', you may also pass 'initialState', which requires
+ * a fully fledged 'State' object.
+ *
  *
  * Returned properties:
  *
@@ -38,32 +70,9 @@ export type UseNewResourceOptions<T> = {
  * * resourceState - A state object. The `.data` property of this object will
  *                   contain the parsed JSON from the server.
  * * setResourceState - Update the local cache of the resource.
- * * submit - Send a PUT request to the server.
- *
- * If you don't need the full resourceState, you can also use the `data` and
- * `setData` properties instead of `resourceState` or `useResourceState`.
- *
- * It's also possible to use useResource for making new resources. In this case
- * a POST request will be done instead on a 'collection' resource.
- *
- * If the response to the POST request is 201 Created and has a Location header,
- * subsequent calls to `submit()` turn into `PUT` requests on the new resource,
- * fully managing the lifecycle of creation, and subsequent updates to the
- * resource.
- *
- * Example call:
- *
- * <pre>
- *   const {
- *     error,
- *     data,
- *     setData,
- *     submit
- *  } = useResource({
- *    resource: resource,
- *    mode: 'POST',
- *    initialState: { foo: bar, title: 'New article!' }
- *  });
+ * * submit - When called the first time, sends a POST request to the
+ *            collection/target resource. The second time it will send a PUT
+ *            request to the previously created resource.
  * </pre>
  *
  * To do POST requests you must specifiy initialState with the state the user starts
@@ -100,7 +109,6 @@ export function useNewResource<T>(targetResource: ResourceLike<any>|string, opti
         // Updating an earlier resource
         resource.put(useResourceResult.resourceState);
       }
-      throw new Error('TODO');
 
     },
     data: useResourceResult.resourceState.data,
@@ -109,7 +117,7 @@ export function useNewResource<T>(targetResource: ResourceLike<any>|string, opti
       resource.updateCache(useResourceResult.resourceState);
     },
     resource,
-  }
+  };
 
 }
 
@@ -117,7 +125,7 @@ function createSyntheticResource<T>(client: Client, options: UseNewResourceOptio
 
   // Create a unique fake URI.
   const uri = `urn:uuid:${uuidv4()}`;
-  
+
   // Open this URI. Ketting does not do HTTP requests unless asked, so this is
   // safe.
   const resource = client.go(uri);
@@ -151,8 +159,8 @@ function createSyntheticResource<T>(client: Client, options: UseNewResourceOptio
 function uuidv4() {
   const a = crypto.getRandomValues(new Uint16Array(8));
   let i = 0;
-  return '00-0-4-1-000'.replace(/[^-]/g, 
-      (s:string) => (a[i++] + (+s) * 0x10000 >> +(s)).toString(16).padStart(4, '0')
+  return '00-0-4-1-000'.replace(/[^-]/g,
+    (s:string) => (a[i++] + (+s) * 0x10000 >> +(s)).toString(16).padStart(4, '0')
   );
 }
 
