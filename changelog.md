@@ -1,6 +1,15 @@
 Changelog
 =========
 
+3.0.1 (2022-03-18)
+------------------
+
+* `useCollection` now returns 'resourceState' and 'resource', which makes it
+  less likely that someone needs both `useResource` and `useCollection` in
+  the same component. These objects were already readily available, so might
+  as well return them.
+
+
 3.0.0 (2022-02-21)
 ------------------
 
