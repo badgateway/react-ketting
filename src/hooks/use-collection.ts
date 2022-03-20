@@ -121,7 +121,7 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
   return {
     loading,
     error,
-    items: items,
+    items,
     resource,
     resourceState,
   };
