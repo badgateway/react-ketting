@@ -40,7 +40,7 @@ type UsePagedCollectionResponse<T> = {
 }
 
 /**
- * The usePagedCollection hook works similar to useCollection, but has the
+ * The useInfiniteCollection hook works similar to useCollection, but has the
  * ability to load in additional pages of items.
  *
  * For this to work, the API needs to expose a "next" link on the collection.
@@ -58,7 +58,7 @@ type UsePagedCollectionResponse<T> = {
  *     items,
  *     hasNextPage,
  *     loadNextPage
- *  } = usePagedResource<Article>(resource);
+ *  } = useInfiniteResource<Article>(resource);
  * </pre>
  *
  * The resource may be passed as a Resource object, a Promise<Resource>, or a
@@ -75,7 +75,7 @@ type UsePagedCollectionResponse<T> = {
  * * loadNextPage - Loads the next page, and appends the new items to the
  *                  items array.
  */
-export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UsePagedCollectionResponse<T> {
+export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UsePagedCollectionResponse<T> {
 
   const rel = options?.rel || 'item';
 
@@ -149,5 +149,17 @@ export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, opt
     hasNextPage,
     loadNextPage,
   };
+
+}
+
+
+/**
+ * usePagedCollection is the deprecated old name for useInfiniteCollection
+ *
+ * @deprecated Rename to useInfiniteCollection
+ */
+export function usePagedCollection<T = any>(resourceLike: ResourceLike<any>, options?: UseCollectionOptions): UsePagedCollectionResponse<T> {
+
+  return useInfiniteCollection(resourceLike, options);
 
 }
