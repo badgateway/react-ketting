@@ -1,5 +1,5 @@
-import { Resource, State } from 'ketting';
-import { useRef } from 'react';
+import { Resource, State as ResourceState } from 'ketting';
+import { useMemo } from 'react';
 import { ResourceLike } from '../util';
 import { useReadResource } from './use-read-resource';
 
@@ -36,7 +36,7 @@ type UseCollectionResponse<T> = {
    *
    * This gives you access to that underlying data.
    */
-  resourceState: State<T>;
+  resourceState: ResourceState<T>;
 
 }
 
@@ -113,15 +113,15 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
       }
     });
 
-  const items = useRef<Resource<T>[]>([]);
-  if (resourceState) {
-    items.current = resourceState.followAll(rel);
-  }
+  const items = useMemo(() => {
+    if (!resourceState) return [];
+    return resourceState.followAll(rel);
+  }, [resourceState]);
 
   return {
     loading,
     error,
-    items: items.current,
+    items,
     resource,
     resourceState,
   };
