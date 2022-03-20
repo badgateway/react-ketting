@@ -1,6 +1,16 @@
 Changelog
 =========
 
+3.0.2 (2022-03-19)
+------------------
+
+* #75: `usePagedCollection` is renamed to `useInfiniteCollection`. The old
+  function name will continue to work until the next major version, but you
+  are encouraged to rename all uses of it.
+* #76 #61: `useCollection()` now returns the same `items` array every call.
+  This can help avoid re-renders and potentially even render loops.
+
+
 3.0.1 (2022-03-18)
 ------------------
 
