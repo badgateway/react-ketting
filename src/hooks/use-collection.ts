@@ -1,5 +1,5 @@
 import { Resource, State as ResourceState } from 'ketting';
-import { useRef } from 'react';
+import { useMemo } from 'react';
 import { ResourceLike } from '../util';
 import { useReadResource } from './use-read-resource';
 
@@ -113,21 +113,15 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
       }
     });
 
-  const items = useRef<Resource<T>[]>([]);
-  const prevResourceState = useRef<ResourceState<T> | null>(null);
-
-  if (resourceState && prevResourceState.current !== resourceState) {
-
-    // followAll always returns a new array. We only want to set a new items
-    // array if resourceState changed.
-    items.current = resourceState.followAll(rel);
-    prevResourceState.current = resourceState;
-  }
+  const items = useMemo(() => {
+    if (!resourceState) return [];
+    return resourceState.followAll(rel);
+  }, [resourceState]);
 
   return {
     loading,
     error,
-    items: items.current,
+    items: items,
     resource,
     resourceState,
   };
