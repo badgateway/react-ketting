@@ -1,4 +1,4 @@
-import { Resource, State } from 'ketting';
+import { Resource, State as ResourceState } from 'ketting';
 import { useRef } from 'react';
 import { ResourceLike } from '../util';
 import { useReadResource } from './use-read-resource';
@@ -36,7 +36,7 @@ type UseCollectionResponse<T> = {
    *
    * This gives you access to that underlying data.
    */
-  resourceState: State<T>;
+  resourceState: ResourceState<T>;
 
 }
 
@@ -114,8 +114,14 @@ export function useCollection<T = any>(resourceLike: ResourceLike<any>, options?
     });
 
   const items = useRef<Resource<T>[]>([]);
-  if (resourceState) {
+  const prevResourceState = useRef<ResourceState<T> | null>(null);
+
+  if (resourceState && prevResourceState.current !== resourceState) {
+
+    // followAll always returns a new array. We only want to set a new items
+    // array if resourceState changed.
     items.current = resourceState.followAll(rel);
+    prevResourceState.current = resourceState;
   }
 
   return {
