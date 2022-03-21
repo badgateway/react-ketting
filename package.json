@@ -35,10 +35,11 @@
   ],
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "ketting": "^7",
+    "ketting": "^7.2.0",
     "react": "^17"
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.4",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^9.0.0",
     "@types/node": "^12.20.5",
@@ -48,7 +49,8 @@
     "chai": "^4.3.4",
     "chokidar": "^3.5.3",
     "eslint": "^8.9.0",
-    "ketting": "^7",
+    "global-jsdom": "^8.4.0",
+    "ketting": "^7.2.0",
     "mocha": "^9.0.1",
     "nyc": "^15.1.0",
     "react": "^17.0.2",
@@ -62,7 +64,8 @@
   },
   "mocha": {
     "require": [
-      "ts-node/register"
+      "ts-node/register",
+      "global-jsdom/register"
     ],
     "ignore": "test/test-entrypoint.ts",
     "recursive": true,
