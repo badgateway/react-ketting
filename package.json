@@ -35,7 +35,7 @@
   ],
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "ketting": "^3.0.2",
+    "ketting": "^7",
     "react": "^17"
   },
   "devDependencies": {
@@ -48,7 +48,7 @@
     "chai": "^4.3.4",
     "chokidar": "^3.5.3",
     "eslint": "^8.9.0",
-    "ketting": "^3.0.2",
+    "ketting": "^7",
     "mocha": "^9.0.1",
     "nyc": "^15.1.0",
     "react": "^17.0.2",
