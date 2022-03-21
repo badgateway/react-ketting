@@ -1,6 +1,6 @@
 {
   "name": "react-ketting",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Ketting bindings for React",
   "main": "dist/index.js",
   "scripts": {
@@ -35,7 +35,7 @@
   ],
   "types": "dist/index.d.ts",
   "peerDependencies": {
-    "ketting": "^7",
+    "ketting": "^7.2.0",
     "react": "^17"
   },
   "devDependencies": {
