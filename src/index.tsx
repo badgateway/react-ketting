@@ -4,6 +4,7 @@ export { useInfiniteCollection, usePagedCollection } from './hooks/use-infinite-
 export { useReadResource } from './hooks/use-read-resource';
 export { useResolveResource } from './hooks/use-resolve-resource';
 export { useResource, UseResourceOptions } from './hooks/use-resource';
+export { useNewResource } from './hooks/use-new-resource';
 
 export { getKettingContext, KettingProvider } from './provider';
 
