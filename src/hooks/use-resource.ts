@@ -101,7 +101,7 @@ export function useResource<T = any>(resourceLike: ResourceLike<any>, options?: 
   return {
     loading,
     error,
-    data: resourceState.data,
+    data: resourceState?.data,
     setData,
     resourceState,
     setResourceState,
