@@ -16,6 +16,7 @@ export { withResource } from './hoc';
 export { ResourceLike } from './util';
 
 export { RequireLogin } from './components/RequireLogin';
+export { SelectLink } from './components/SelectLink';
 
 // Reexport from Ketting
 export * from 'ketting';

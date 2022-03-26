@@ -59,7 +59,8 @@
   },
   "nyc": {
     "extension": [
-      ".ts"
+      ".ts",
+      ".tsx"
     ]
   },
   "mocha": {
