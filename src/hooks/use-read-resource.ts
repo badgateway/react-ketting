@@ -138,17 +138,13 @@ export function useReadResource<T>(resourceLike: ResourceLike<T>, options: UseRe
     if (cachedState) {
       setResourceState(cachedState);
       setLoading(false);
+
       return;
-    } else {
-      setResourceState(undefined);
-      setLoading(true);
     }
+    setResourceState(undefined);
+    setLoading(true);
 
     resource.get({ headers: options.initialGetRequestHeaders })
-      .then(newState => {
-        setResourceState(newState.clone());
-        setLoading(false);
-      })
       .catch(err => {
         setError(err);
         setLoading(false);

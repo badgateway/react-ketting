@@ -35,8 +35,13 @@ describe('useReadResource', () => {
 
     await waitFor(() => screen.getByText('Hello world'));
 
-    // 2 renders is aspirational. Currently this is 5 :(
-    //expect(renderCount).to.eql(2);
+    // Currently this is 3 renders, but in React 18 apparently this should
+    // automatically drop to 2 due to batch state updates.
+    //
+    // The reason it's 3 renders currently is becaused setLoading and
+    // setResourceState each cause a render even though they are called
+    // immediately after each other.
+    expect(renderCount).to.be.lessThan(4);
 
   });
 
@@ -65,8 +70,7 @@ describe('useReadResource', () => {
     screen.getByText('Loading');
 
     await waitFor(() => screen.getByText('Error!'));
-    // 2 renders is aspirational. Currently this is 5 :(
-    //expect(renderCount).to.eql(2);
+    expect(renderCount).to.be.lessThan(4);
 
   });
 
