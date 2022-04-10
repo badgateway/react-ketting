@@ -1,6 +1,20 @@
 Changelog
 =========
 
+4.0.0-beta.0 (2022-04-10)
+-------------------------
+
+* Added `<SelectLink>` component. This component renders
+  a `<select>` element with a list of links from a resource.
+* Added `useNewResource`, which lets you create new resources on collections
+  using a `POST` request.
+* Several optimizations, reducing renders for `useResource` from 5 down to
+  2 in certain cases.
+* `react-ketting` now re-exports everything from the `ketting` package.
+* BC Break: `mode` option from `useResource` has been removed.
+* Fixed an infinite rendering bug when passing a promise to `useResource`.
+
+
 3.0.3 (2022-03-21)
 ------------------
 
