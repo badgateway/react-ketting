@@ -1,6 +1,12 @@
 Changelog
 =========
 
+4.0.0-beta.1 (2022-04-10)
+-------------------------
+
+* `useNewResource` now assumes HAL as the default format.
+
+
 4.0.0-beta.0 (2022-04-10)
 -------------------------
 

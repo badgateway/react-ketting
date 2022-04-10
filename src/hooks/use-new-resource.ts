@@ -1,4 +1,4 @@
-import { Resource, State as ResourceState, BaseState, Client, Links } from 'ketting';
+import { Resource, State as ResourceState, HalState, Client, Links } from 'ketting';
 import { useState } from 'react';
 
 import { ResourceLike } from '../util';
@@ -134,7 +134,7 @@ function createSyntheticResource<T>(client: Client, options: UseNewResourceOptio
 
   // Build the 'resourceState'
   if ('initialData' in options) {
-    resourceState = new BaseState({
+    resourceState = new HalState({
       uri,
       client,
       headers: new Headers(),
