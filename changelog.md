@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.0.1 (2022-06-07)
+------------------
+
+* #87 `useInfiniteCollection`'s `refreshOnStale` did not function correctly.
+  it now fully resets the component.
+
+
 4.0.0 (2022-05-19)
 ------------------
 
