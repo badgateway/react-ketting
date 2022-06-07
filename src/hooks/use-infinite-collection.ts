@@ -56,8 +56,6 @@ type UsePagedCollectionResponse<T> = {
  *     loading,
  *     error,
  *     items,
- *     hasNextPage,
- *     loadNextPage
  *  } = useInfiniteResource<Article>(resource);
  * </pre>
  *
@@ -113,7 +111,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
     // Set the 'current' page back to the first page in the collection.
     setCurrentCollectionResource(resourceLike);
 
-  }, [bc.resource]);
+  }, [bc.resourceState]);
 
   useEffect(() => {
 
