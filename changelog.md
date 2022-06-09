@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.0.2 (2022-06-09)
+------------------
+
+* #90 `useInfiniteCollection` did not refresh correctly with if there was
+  only 1 page.
+
+
 4.0.1 (2022-06-07)
 ------------------
 
