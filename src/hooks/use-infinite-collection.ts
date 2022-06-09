@@ -124,7 +124,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       ]);
     }
 
-  }, [cc.resourceState?.uri]);
+  }, [cc.resourceState?.uri, bc.resourceState]);
 
 
   const hasNextPage =
