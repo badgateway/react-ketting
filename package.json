@@ -42,7 +42,7 @@
     "@testing-library/react": "^13.0.0",
     "@types/chai": "^4.2.15",
     "@types/mocha": "^9.0.0",
-    "@types/node": "^12.20.5",
+    "@types/node": "^16.11.39",
     "@types/react": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
