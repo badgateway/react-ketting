@@ -111,6 +111,15 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
     // Set the 'current' page back to the first page in the collection.
     setCurrentCollectionResource(resourceLike);
 
+    if (cc.resourceState) {
+      // This effect gets triggered when we get data for a new page.
+      // When we do, append the items to our array.
+      setItems([
+        ...items,
+        ...cc.resourceState.followAll(rel)
+      ]);
+    }
+
   }, [bc.resourceState]);
 
   useEffect(() => {
@@ -124,7 +133,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       ]);
     }
 
-  }, [cc.resourceState?.uri, bc.resourceState]);
+  }, [cc.resourceState?.uri]);
 
 
   const hasNextPage =
