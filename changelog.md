@@ -1,6 +1,14 @@
 Changelog
 =========
 
+4.0.3 (2022-06-20)
+------------------
+
+* #93: Reverted fix from for `useInfiniteCollection`, which had another
+  negative side-effect. Both the side-effect and the original issue should
+  be fixed with this release.
+
+
 4.0.2 (2022-06-09)
 ------------------
 
