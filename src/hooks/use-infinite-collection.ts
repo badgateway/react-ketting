@@ -1,7 +1,7 @@
 import { Resource } from 'ketting';
 import { ResourceLike } from '../util';
 import { UseCollectionOptions } from './use-collection';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useReadResource } from './use-read-resource';
 
 /**
@@ -79,7 +79,12 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
   const [items, setItems] = useState<Resource<T>[]>([]);
 
-  const [currentCollectionResource, setCurrentCollectionResource] = useState<ResourceLike<any>>(resourceLike);
+  // Are there more pages?
+  const nextPageResource = useRef<Resource|null>(null);
+  const error = useRef<Error|null>(null);
+
+  // Are we currently loading a 'next page'. This is used to avoid race conditions
+  const [loading, setLoading] = useState(false);
 
   // This is the 'base collection'
   const bc = useReadResource(resourceLike, {
@@ -92,68 +97,62 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
     }
   });
 
-  // This is the 'current collection
-  const cc = useReadResource(currentCollectionResource, {
-    refreshOnStale: options?.refreshOnStale,
-    // This header will be included on the first, uncached fetch.
-    // This may be helpful to the server and instruct it to embed
-    // all collection members in that initial fetch.
-    initialGetRequestHeaders: {
-      Prefer: 'transclude=' + rel,
-    }
-  });
 
   useEffect(() => {
 
-    // We're loading a new 'base collection', so lets clear any items we got
-    setItems([]);
-
-    // Set the 'current' page back to the first page in the collection.
-    setCurrentCollectionResource(resourceLike);
-
-    if (cc.resourceState) {
-      // This effect gets triggered when we get data for a new page.
-      // When we do, append the items to our array.
-      setItems([
-        ...items,
-        ...cc.resourceState.followAll(rel)
-      ]);
+    if (!bc.loading) {
+      // The 'base collection' has stopped loading, so lets set the first page.
+      setItems(bc.resourceState.followAll(rel));
+      nextPageResource.current = bc.resourceState.links.has('next') ? bc.resourceState.follow('next') : null;
+      setLoading(false);
     }
 
   }, [bc.resourceState]);
 
-  useEffect(() => {
+  let loadNextPageCalled = false;
+  const loadNextPage = async() => {
 
-    if (cc.resourceState) {
-      // This effect gets triggered when we get data for a new page.
-      // When we do, append the items to our array.
-      setItems([
-        ...items,
-        ...cc.resourceState.followAll(rel)
-      ]);
-    }
-
-  }, [cc.resourceState?.uri]);
-
-
-  const hasNextPage =
-    !cc.loading && cc.resourceState && cc.resourceState.links.has('next');
-
-  const loadNextPage = () => {
-
-    if (!hasNextPage) {
+    if (!nextPageResource.current) {
       console.warn('loadNextPage was called, but there was no next page');
       return;
     }
-    setCurrentCollectionResource(cc.resourceState.follow('next'));
+    if (loadNextPageCalled) {
+      console.warn('You called loadNextPage(), but it was an old copy. You should not memoize or store a reference to this function, but instead always use the one that was returned last. We ignored this call');
+      return;
+    }
+    loadNextPageCalled = true;
+
+    // We are currently loading a new page
+    setLoading(true);
+
+    try {
+      const nextPageState = await nextPageResource.current.get({
+        headers: {
+          Prefer: 'transclude=' + rel,
+        }
+      });
+
+      // Set up the next page.
+      nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
+
+      // Add new resources to page data
+      setItems([
+        ...items,
+        ...nextPageState.followAll(rel)
+      ]);
+
+    } catch (err:any) {
+      error.current = err;
+    }
+    setLoading(false);
 
   };
 
   return {
-    loading: cc.loading,
-    error: cc.error,
+    loading: bc.loading || loading,
+    error: bc.error ?? error.current ?? null,
     items,
-    hasNextPage,
+    hasNextPage: nextPageResource.current !== null,
     loadNextPage,
   };
 

@@ -7,8 +7,6 @@ import { render, RenderOptions } from '@testing-library/react';
 
 export const client = new Client('http://example');
 
-
-
 // A super dumb interceptor for requests
 const httpObjects = new Map<string, [BodyInit, ResponseInit?]>();
 
