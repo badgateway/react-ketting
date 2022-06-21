@@ -1,6 +1,13 @@
 Changelog
 =========
 
+4.0.8 (2022-??-??)
+------------------
+
+* #94: Complete rewrite of `useInfiniteCollection` it had still more issues
+ in edge-cases, so it needed a higher-approach to fixing it.
+
+
 4.0.3 (2022-06-20)
 ------------------
 
