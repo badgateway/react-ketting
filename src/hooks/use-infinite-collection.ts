@@ -77,14 +77,23 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
   const rel = options?.rel || 'item';
 
-  const [items, setItems] = useState<Resource<T>[]>([]);
+  const items = useRef<Resource<T>[]>([]);
 
   // Are there more pages?
   const nextPageResource = useRef<Resource|null>(null);
-  const [error, setError] = useState<Error|null>(null);
+  const error = useRef<Error|null>(null);
 
   // Are we currently loading a 'next page'. This is used to avoid race conditions
   const loadingNextPage = useRef(false);
+
+  /**
+   * Everything in this component uses useRef, which means there's no
+   * state updates, and thus no re-renders.
+   *
+   * This useState call is specifically for forcing re-renders. Is there a
+   * better way?
+   */
+  const [stateIncrementer, setStateIncrementer] = useState(0);
 
   // This is the 'base collection'
   const bc = useReadResource(resourceLike, {
@@ -102,9 +111,10 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
     if (!bc.loading) {
       // The 'base collection' has stopped loading, so lets set the first page.
-      setItems(bc.resourceState.followAll(rel));
+      items.current = bc.resourceState.followAll(rel);
       nextPageResource.current = bc.resourceState.links.has('next') ? bc.resourceState.follow('next') : null;
       loadingNextPage.current = false;
+      setStateIncrementer(stateIncrementer+1);
     }
 
   }, [bc.resourceState]);
@@ -142,15 +152,16 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
 
       // Add new resources to page data
-      setItems([
-        ...items,
+      items.current = [
+        ...items.current,
         ...nextPageState.followAll(rel)
-      ]);
-
+      ];
+      setStateIncrementer(stateIncrementer+1);
 
     } catch (err:any) {
-      setError(err);
+      error.current = err;
       loadingNextPage.current = false;
+      setStateIncrementer(stateIncrementer+1);
     }
 
 
@@ -158,8 +169,8 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
   return {
     loading: bc.loading || loadingNextPage.current,
-    error: bc.error ?? error ?? null,
-    items,
+    error: bc.error ?? error.current ?? null,
+    items: items.current,
     hasNextPage: nextPageResource.current !== null,
     loadNextPage,
   };
