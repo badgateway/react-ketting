@@ -84,16 +84,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
   const error = useRef<Error|null>(null);
 
   // Are we currently loading a 'next page'. This is used to avoid race conditions
-  const loadingNextPage = useRef(false);
-
-  /**
-   * Everything in this component uses useRef, which means there's no
-   * state updates, and thus no re-renders.
-   *
-   * This useState call is specifically for forcing re-renders. Is there a
-   * better way?
-   */
-  const [stateIncrementer, setStateIncrementer] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   // This is the 'base collection'
   const bc = useReadResource(resourceLike, {
@@ -113,25 +104,26 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       // The 'base collection' has stopped loading, so lets set the first page.
       items.current = bc.resourceState.followAll(rel);
       nextPageResource.current = bc.resourceState.links.has('next') ? bc.resourceState.follow('next') : null;
-      loadingNextPage.current = false;
-      setStateIncrementer(stateIncrementer+1);
+      setLoading(false);
     }
 
   }, [bc.resourceState]);
 
-
+  let loadNextPageCalled = false;
   const loadNextPage = async() => {
 
     if (!nextPageResource.current) {
       console.warn('loadNextPage was called, but there was no next page');
       return;
     }
-    if (loadingNextPage.current) {
-      // A next page was already being loaded, so lets ignore this call.
+    if (loadNextPageCalled) {
+      console.warn('You called loadNextPage(), but it was an old copy. You should not memoize or store a reference to this function, but instead always use the one that was returned last. We ignored this call');
       return;
     }
+    loadNextPageCalled = true;
+
     // We are currently loading a new page
-    loadingNextPage.current = true;
+    setLoading(true);
 
     try {
       const nextPageState = await nextPageResource.current.get({
@@ -139,14 +131,6 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
           Prefer: 'transclude=' + rel,
         }
       });
-
-      // It's possible that the resource was reset while we were loading
-      // this page. If this happened, loadingNextPage will magically have
-      // been set back to false, and we should just ignore the result.
-      if (!loadingNextPage.current) return;
-
-      // We're no longer loading
-      loadingNextPage.current = false;
 
       // Set up the next page.
       nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
@@ -156,19 +140,16 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
         ...items.current,
         ...nextPageState.followAll(rel)
       ];
-      setStateIncrementer(stateIncrementer+1);
 
     } catch (err:any) {
       error.current = err;
-      loadingNextPage.current = false;
-      setStateIncrementer(stateIncrementer+1);
     }
-
+    setLoading(false);
 
   };
 
   return {
-    loading: bc.loading || loadingNextPage.current,
+    loading: bc.loading || loading,
     error: bc.error ?? error.current ?? null,
     items: items.current,
     hasNextPage: nextPageResource.current !== null,
