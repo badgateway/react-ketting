@@ -77,7 +77,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
   const rel = options?.rel || 'item';
 
-  const items = useRef<Resource<T>[]>([]);
+  const [items, setItems] = useState<Resource<T>[]>([]);
 
   // Are there more pages?
   const nextPageResource = useRef<Resource|null>(null);
@@ -102,7 +102,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
     if (!bc.loading) {
       // The 'base collection' has stopped loading, so lets set the first page.
-      items.current = bc.resourceState.followAll(rel);
+      setItems(bc.resourceState.followAll(rel));
       nextPageResource.current = bc.resourceState.links.has('next') ? bc.resourceState.follow('next') : null;
       setLoading(false);
     }
@@ -136,10 +136,10 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
 
       // Add new resources to page data
-      items.current = [
-        ...items.current,
+      setItems([
+        ...items,
         ...nextPageState.followAll(rel)
-      ];
+      ]);
 
     } catch (err:any) {
       error.current = err;
@@ -151,7 +151,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
   return {
     loading: bc.loading || loading,
     error: bc.error ?? error.current ?? null,
-    items: items.current,
+    items,
     hasNextPage: nextPageResource.current !== null,
     loadNextPage,
   };

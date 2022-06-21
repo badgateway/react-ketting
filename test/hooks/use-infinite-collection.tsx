@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { render, screen, storeInCache, waitFor } from '../test-utils';
 import { useInfiniteCollection, Resource, useResource } from '../../src';
 
-describe('useResource', () => {
+describe('useInfiniteCollection', () => {
 
   storeInCache('/page/1', {
     _links: {

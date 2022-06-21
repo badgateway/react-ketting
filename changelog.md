@@ -1,7 +1,7 @@
 Changelog
 =========
 
-4.0.8 (2022-??-??)
+4.0.9 (2022-??-??)
 ------------------
 
 * #94: Complete rewrite of `useInfiniteCollection` it had still more issues
