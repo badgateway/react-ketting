@@ -77,8 +77,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
   const rel = options?.rel || 'item';
 
-  // All the items in the collection, grouped per page.
-  const [pages, setPages] = useState<Resource<T>[][]>([]);
+  const [items, setItems] = useState<Resource<T>[]>([]);
 
   // Are there more pages?
   const nextPageResource = useRef<Resource|null>(null);
@@ -103,9 +102,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
 
     if (!bc.loading) {
       // The 'base collection' has stopped loading, so lets set the first page.
-      setPages([
-        bc.resourceState.followAll(rel)
-      ]);
+      setItems(bc.resourceState.followAll(rel));
       nextPageResource.current = bc.resourceState.links.has('next') ? bc.resourceState.follow('next') : null;
       loadingNextPage.current = false;
     }
@@ -138,17 +135,18 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
       // been set back to false, and we should just ignore the result.
       if (!loadingNextPage.current) return;
 
-      // Add new resources to page data
-      setPages([
-        ...pages,
-        nextPageState.followAll(rel)
-      ]);
-
       // We're no longer loading
       loadingNextPage.current = false;
 
       // Set up the next page.
       nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
+
+      // Add new resources to page data
+      setItems([
+        ...items,
+        ...nextPageState.followAll(rel)
+      ]);
+
 
     } catch (err:any) {
       setError(err);
@@ -161,7 +159,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
   return {
     loading: bc.loading || loadingNextPage.current,
     error: bc.error ?? error ?? null,
-    items: pages.flat(),
+    items,
     hasNextPage: nextPageResource.current !== null,
     loadNextPage,
   };

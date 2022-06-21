@@ -20,6 +20,15 @@ describe('useResource', () => {
         { href: '/item/3' },
         { href: '/item/4' },
       ],
+      next: { href: '/page/3' }
+    },
+  });
+  storeInCache('/page/3', {
+    _links: {
+      item: [
+        { href: '/item/5' },
+        { href: '/item/6' },
+      ],
     },
   });
   for(let i = 1; i<100; i++) {
@@ -81,7 +90,7 @@ describe('useResource', () => {
       const { loading, error, items, hasNextPage, loadNextPage  } = useInfiniteCollection<any>('/page/1');
       useEffect(() => {
         if (hasNextPage) loadNextPage();
-      },[hasNextPage]);
+      },[items]);
 
       if (loading) {
         return <div>Loading</div>;
@@ -98,7 +107,7 @@ describe('useResource', () => {
 
     render(<MyApp />);
 
-    await waitFor(() => screen.getByText('Item 4'));
+    await waitFor(() => screen.getByText('Item 6'));
 
   });
 
