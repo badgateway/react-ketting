@@ -1,6 +1,6 @@
 {
   "name": "react-ketting",
-  "version": "4.0.4",
+  "version": "4.0.5",
   "description": "Ketting bindings for React",
   "main": "dist/index.js",
   "scripts": {
