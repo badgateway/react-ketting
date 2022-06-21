@@ -113,7 +113,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
   }, [bc.resourceState]);
 
 
-  const loadNextPage = () => {
+  const loadNextPage = async() => {
 
     if (!nextPageResource.current) {
       console.warn('loadNextPage was called, but there was no next page');
@@ -126,23 +126,35 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
     // We are currently loading a new page
     loadingNextPage.current = true;
 
-    nextPageResource.current.followAll(rel)
-      .then(newPages => {
-
-        // It's possible that the resource was reset while we were loading
-        // this page. If this happened, loadingNextPage will magically have
-        // been set back to false, and we should just ignore the result.
-        if (!loadingNextPage.current) return;
-
-        setPages([
-          ...pages,
-          newPages
-        ]);
-
-      })
-      .catch(err => {
-        setError(err);
+    try {
+      const nextPageState = await nextPageResource.current.get({
+        headers: {
+          Prefer: 'transclude=' + rel,
+        }
       });
+
+      // It's possible that the resource was reset while we were loading
+      // this page. If this happened, loadingNextPage will magically have
+      // been set back to false, and we should just ignore the result.
+      if (!loadingNextPage.current) return;
+
+      // Add new resources to page data
+      setPages([
+        ...pages,
+        nextPageState.followAll(rel)
+      ]);
+
+      // We're no longer loading
+      loadingNextPage.current = false;
+
+      // Set up the next page.
+      nextPageResource.current = nextPageState.links.has('next') ? nextPageState.follow('next') : null;
+
+    } catch (err:any) {
+      setError(err);
+      loadingNextPage.current = false;
+    }
+
 
   };
 

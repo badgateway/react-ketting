@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { render, screen, storeInCache, waitFor} from '../test-utils';
-
+import { useEffect } from 'react';
+import { render, screen, storeInCache, waitFor } from '../test-utils';
 import { useInfiniteCollection, Resource, useResource } from '../../src';
 
 describe('useResource', () => {
@@ -26,7 +26,7 @@ describe('useResource', () => {
     storeInCache('/item/' + i, { title: 'Item ' + i});
   }
 
-  it('should fetch and render data', async () => {
+  it('should fetch and render the first page.', async () => {
 
     const Item = (props: { resource: Resource }) => {
 
@@ -54,13 +54,51 @@ describe('useResource', () => {
         {items.map( item => <li key={item.uri}><Item resource={item} /></li> )}
       </ul>;
 
-
     };
 
     render(<MyApp />);
     screen.getByText('Loading');
 
     await waitFor(() => screen.getByText('Item 2'));
+
+  });
+  it('should fetch and render the second page.', async () => {
+
+    const Item = (props: { resource: Resource }) => {
+
+      const { loading, data } = useResource(props.resource);
+
+      if (loading) {
+        return <div>Loading</div>;
+      }
+
+      return <div>{data.title}</div>;
+
+    };
+
+    const MyApp = () => {
+
+      const { loading, error, items, hasNextPage, loadNextPage  } = useInfiniteCollection<any>('/page/1');
+      useEffect(() => {
+        if (hasNextPage) loadNextPage();
+      },[hasNextPage]);
+
+      if (loading) {
+        return <div>Loading</div>;
+      }
+      if (error) {
+        return <div>{error.message}</div>;
+      }
+
+      return <ul>
+        {items.map( item => <li key={item.uri}><Item resource={item} /></li> )}
+      </ul>;
+
+    };
+
+    render(<MyApp />);
+
+    await waitFor(() => screen.getByText('Item 4'));
 
   });
 
