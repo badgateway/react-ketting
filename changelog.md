@@ -7,6 +7,8 @@ Changelog
 * #94: Complete rewrite of `useInfiniteCollection` it had still more issues
  in edge-cases, so it needed a higher-approach to fixing it.
 
+Note: a bunch of versions were skipped. They were all released as beta to test
+issues with this hook.
 
 4.0.3 (2022-06-20)
 ------------------
