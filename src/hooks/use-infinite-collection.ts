@@ -113,7 +113,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
   }, [bc.resourceState]);
 
 
-  const loadNextPage = async() => {
+  const loadNextPage = () => {
 
     if (!nextPageResource.current) {
       console.warn('loadNextPage was called, but there was no next page');
@@ -132,7 +132,7 @@ export function useInfiniteCollection<T = any>(resourceLike: ResourceLike<any>, 
         // It's possible that the resource was reset while we were loading
         // this page. If this happened, loadingNextPage will magically have
         // been set back to false, and we should just ignore the result.
-        if (loadingNextPage.current) return;
+        if (!loadingNextPage.current) return;
 
         setPages([
           ...pages,
