@@ -6,9 +6,10 @@ import { useReadResource } from './use-read-resource';
  * The result of a useResource hook.
  */
 export type UseResourceResponse<T> = {
-
   // True if there is no data yet
   loading: boolean;
+
+  // Will contain an Error object, if an error occurred
   error: Error | null;
 
   // A full Ketting State object
@@ -18,7 +19,7 @@ export type UseResourceResponse<T> = {
   setResourceState: (newState: ResourceState<T>) => void;
 
   // Send the state to the server via a PUT or POST request.
-  submit: (state?: ResourceState<T>) => void;
+  submit: (state?: ResourceState<T>) => Promise<void>;
 
   // The 'data' part of the state.
   data: T;
@@ -28,8 +29,7 @@ export type UseResourceResponse<T> = {
 
   // The 'real' resource.
   resource: Resource<T>;
-
-}
+};
 export type UseResourceOptions<T> = {
   initialState?: T | ResourceState<T>;
   refreshOnStale?: boolean;
