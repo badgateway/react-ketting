@@ -29,7 +29,7 @@ export function storeInCache(path: string, body: any, responseInit?: ResponseIni
   httpObjects.set(path, [JSON.stringify(body), responseInit]);
 }
 
-const Providers: FC = ({children}) => {
+const Providers: FC = ({children}:any) => {
 
   return <KettingProvider client={client}>
     {children}
