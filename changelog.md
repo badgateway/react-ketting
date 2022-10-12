@@ -1,6 +1,14 @@
 Changelog
 =========
 
+4.0.10 (2022-10-12)
+-------------------
+
+* #98: Return type of `submit()` function is changed from `void` to
+  `Promise<void>` @BeckyPollard
+* #95: `loading` did not go back to `true` if an error occurred in some cases.
+
+
 4.0.9 (2022-06-21)
 ------------------
 
