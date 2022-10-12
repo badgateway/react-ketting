@@ -105,6 +105,7 @@ export function useReadResource<T>(resourceLike: ResourceLike<T>, options: UseRe
           .refresh()
           .catch(err => {
             setError(err);
+            setLoading(false);
           });
       }
     };
