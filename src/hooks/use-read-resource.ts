@@ -101,6 +101,7 @@ export function useReadResource<T>(resourceLike: ResourceLike<T>, options: UseRe
 
     const onStale = () => {
       if (refreshOnStale) {
+        setError(null);
         resource
           .refresh()
           .catch(err => {
@@ -144,6 +145,7 @@ export function useReadResource<T>(resourceLike: ResourceLike<T>, options: UseRe
     }
     setResourceState(undefined);
     setLoading(true);
+    setError(null);
 
     resource.get({ headers: options.initialGetRequestHeaders })
       .catch(err => {
